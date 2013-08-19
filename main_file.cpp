@@ -1,0 +1,198 @@
+#include <GL/gl.h>
+#include <GL/glut.h>
+#include <stdio.h> //Przydatne do wypisywania komunikatów na konsoli
+#include <stdlib.h>
+#include <iostream>
+#include <cmath>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#define PI 3.14159265
+
+float speed=360; //360 stopni/s
+int lastTime=0;
+float angle, angle2;
+float pozycja_obserwatora[3];
+float cel_obserwatora[3];
+int ekran_x=800;
+int ekran_y=800;
+int obrot=2;
+int licznik=0;
+int ostatni_cel_x=0;
+float v_oddalania=0.01; // predkosc oddalania sie przy uzyciu strzalek UP, DOWN
+float v_obracania=5; // kat obracania sie bohatera przy uzyciu strzalek LEFT, RIGHT  
+
+void displayFrame(void) 
+{
+    
+    glClearColor(0,0,0,0);//(w ulamkach ) ustawia kolor czyszczenie buforow
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);// czysci bufor kolorow
+	
+    // macierz widoku
+    /*
+    glm::mat4 glm::lookAt(
+    glm::vec3 observer, // polozenie kamery - glowy
+    glm::vec3 center, //punkt na ktory sie patrzy
+    glm::vec3 noseVector // wektor nos jak wysoko nad kamera
+    );*/
+
+    glm::mat4 V=glm::lookAt(
+    glm::vec3(pozycja_obserwatora[0],pozycja_obserwatora[1],pozycja_obserwatora[2]),
+    glm::vec3(cel_obserwatora[0],cel_obserwatora[1],cel_obserwatora[2]),
+    glm::vec3(0.0f,1.0f,0.0f));
+    
+    /*
+    Macierz rzutowania perspektywicznego
+    glm::mat4 glm::perspective(
+    float fovy, // kat rozwarcia stozka
+    float aspect, // stosunek szerokosci do wysokosci okna
+    float zNear, // blisk plaszczyzna odcinania
+    float zFar); // daleka plaszczyzan odcinania  
+    */
+
+    glm::mat4 P=glm::perspective(50.0f, 1.0f, 1.0f, 50.0f);
+
+    /*
+    // wektory
+    glm::vec3 wektor3=glm::vec3(1.0f,2.0f,3.0f);
+    glm::vec4 wektor4=glm::vec4(1.0f,2.0f,3.0f,4.0f);
+    // macierz 3 na 3
+    glm::mat3 macierz3x3=glm::mat3(vec3(1.#define PI 3.141592650f,2.0f,3.0f),
+				  vec3(4.0f,5.0f,6.0f),
+				  vec3(7.0f,8.0f,9.0f));
+    // macierz 4 na 4
+    glm::mat4 macierz4x4=glm::mat4(1.0f);
+    */
+    
+    //macierz jednostkowa -- nic nie zmienia, jesli jest jednostkowa
+    glm::mat4 M=glm::mat4(1.0f);
+
+    /*
+    M=IR(50,<1,0,1>)=R(50,<1,0,1>)
+    M=glm::rotate(M,60.0f,glm::vec3(0.0f,1.0f,0.0f));// 1 - os x, 1 - os y, 1 os z
+    M=R(50,<1,0,1>)T(<1,1,0>)
+    M=glm::translate(M,glm::vec3(1.0f,1.0f,0.0f));
+    M=R(50,<1,0,1>)T(<1,1,0>)S(<2,2,2>)
+    M=glm::scale(M,glm::vec3(2.0f,2.0f,2.0f));
+    glutWireTorus(double innerRadius, double outerRadius,int nsides, int rings);
+    */
+    
+    M=glm::rotate(glm::mat4(1.0f),angle,glm::vec3(0.0f,1.0f,0.0f)); // odpowiada za obrot
+
+    // zaladowanie tego do przestrzeni
+      glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(glm::value_ptr(P));
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(glm::value_ptr(V*M));
+    glutSolidTorus(0.5, 1,30, 24);  
+    glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
+}
+
+// animacja - tego jeszcze nie wykorzystujemy
+void nextFrame(void) 
+{
+
+    int actTime=glutGet(GLUT_ELAPSED_TIME);
+
+    int interval=actTime-lastTime; // liczy przedzial
+    lastTime=actTime;
+    angle+=speed*interval/1000.0; // liczy predkosc z jaka musi sie obrocic
+
+    if(angle>360) angle-=360;
+    glutPostRedisplay();
+
+}
+
+
+// procedury do obslugi klawiszy
+
+//przycisniecie
+void keyDown(int c, int x, int y) 
+{
+    if (c==GLUT_KEY_LEFT) 
+    {
+      
+	float ax=cel_obserwatora[0]-pozycja_obserwatora[0],
+	      az=cel_obserwatora[2]-pozycja_obserwatora[2];
+	
+	cel_obserwatora[0]=pozycja_obserwatora[0]+(ax*cos(-(v_obracania*PI/180))-az*sin(-(v_obracania*PI/180)));
+	cel_obserwatora[2]=pozycja_obserwatora[2]+(ax*sin(-(v_obracania*PI/180))+az*cos(-(v_obracania*PI/180)));
+	
+    }
+    if (c==GLUT_KEY_RIGHT) 
+    {
+      
+	float ax=cel_obserwatora[0]-pozycja_obserwatora[0],
+	      az=cel_obserwatora[2]-pozycja_obserwatora[2];
+	
+	cel_obserwatora[0]=pozycja_obserwatora[0]+(ax*cos(v_obracania*PI/180)-az*sin(v_obracania*PI/180));
+	cel_obserwatora[2]=pozycja_obserwatora[2]+(ax*sin(v_obracania*PI/180)+az*cos(v_obracania*PI/180));
+      
+    }
+
+    if (c==GLUT_KEY_UP) 
+    {
+	
+	float ax=cel_obserwatora[0]-pozycja_obserwatora[0],
+	      az=cel_obserwatora[2]-pozycja_obserwatora[2];
+	
+	pozycja_obserwatora[0]=pozycja_obserwatora[0]+(v_oddalania*ax);
+	pozycja_obserwatora[2]=pozycja_obserwatora[2]+(v_oddalania*az);
+	  	
+	cel_obserwatora[0]=cel_obserwatora[0]+(v_oddalania*ax);
+	cel_obserwatora[2]=cel_obserwatora[2]+(v_oddalania*az);
+	
+    }
+    
+    if (c==GLUT_KEY_DOWN) 
+    {
+	
+	float ax=cel_obserwatora[0]-pozycja_obserwatora[0],
+	      az=cel_obserwatora[2]-pozycja_obserwatora[2];
+	      
+	pozycja_obserwatora[0]=pozycja_obserwatora[0]-(v_oddalania*ax);
+	pozycja_obserwatora[2]=pozycja_obserwatora[2]-(v_oddalania*az);
+	
+	
+	cel_obserwatora[0]=cel_obserwatora[0]-(v_oddalania*ax);
+	cel_obserwatora[2]=cel_obserwatora[2]-(v_oddalania*az);
+    
+    }
+    
+    glutPostRedisplay();
+}
+
+int main(int argc, char* argv[]) 
+{
+    //poczatkowe wartosci dla obserwatora
+    pozycja_obserwatora[0]=0;//os x
+    pozycja_obserwatora[1]=0;// os y
+    pozycja_obserwatora[2]=-5;//os z
+    cel_obserwatora[0]=0;
+    cel_obserwatora[1]=0;
+    cel_obserwatora[2]=10;
+    
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(ekran_x,ekran_y);
+    glutInitWindowPosition(0,0);
+    glutCreateWindow("Program OpenGL");        
+    glutDisplayFunc(displayFrame);
+	    
+    glEnable(GL_LIGHTING); // do cieniowania
+    glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
+    //glShadeModel(GL_FLAT); // cienowanie plaske
+    glShadeModel(GL_SMOOTH); // cienowanie gladki
+
+    glEnable(GL_DEPTH_TEST); // wlacza Z-bufor w tym buforze znajduja sie odleglosci pikseli od obserwatora
+    glEnable(GL_COLOR_MATERIAL); // sledzenie przez material kolorow
+    glColor3d(0.1, 0.2, 1); // ustawia kolor rysowanego obiektu
+
+
+    // obsluga przycisnietego i puszczonego klawisza
+    glutSpecialFunc(keyDown);
+    
+    //petla glowna
+    glutMainLoop();
+    return 0;
+}
