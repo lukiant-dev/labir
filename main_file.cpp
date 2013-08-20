@@ -1,4 +1,4 @@
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <GL/glut.h>
 #include <stdio.h> //Przydatne do wypisywania komunikatów na konsoli
 #include <stdlib.h>
@@ -7,9 +7,11 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "tga.h"
+#include "cube.h"
 #define PI 3.14159265
 
-float speed=360; //360 stopni/s
+float speed=180; //360 stopni/s
 int lastTime=0;
 float angle, angle2;
 float pozycja_obserwatora[3];
@@ -22,10 +24,16 @@ int ostatni_cel_x=0;
 float v_oddalania=0.01; // predkosc oddalania sie przy uzyciu strzalek UP, DOWN
 float v_obracania=5; // kat obracania sie bohatera przy uzyciu strzalek LEFT, RIGHT  
 
+float angle_x;
+float angle_y;
+float speed_x=0; //60 stopni/s
+float speed_y=0; //60 stopni/s
+
+
 void displayFrame(void) 
 {
     
-    glClearColor(0,0,0,0);//(w ulamkach ) ustawia kolor czyszczenie buforow
+    glClearColor(0,0,0,1);//(w ulamkach ) ustawia kolor czyszczenie buforow
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);// czysci bufor kolorow
 	
     // macierz widoku
@@ -63,11 +71,12 @@ void displayFrame(void)
     // macierz 4 na 4
     glm::mat4 macierz4x4=glm::mat4(1.0f);
     */
-    
-    //macierz jednostkowa -- nic nie zmienia, jesli jest jednostkowa
-    glm::mat4 M=glm::mat4(1.0f);
-
     /*
+    //macierz jednostkowa -- nic nie zmifloat angle_x;
+float angle_y;enia, jesli jest jednostkowa
+    glm::mat4 M=glm::mat4(1.0f);
+    glm::mat4 M2=glm::mat4(1.0f);
+    
     M=IR(50,<1,0,1>)=R(50,<1,0,1>)
     M=glm::rotate(M,60.0f,glm::vec3(0.0f,1.0f,0.0f));// 1 - os x, 1 - os y, 1 os z
     M=R(50,<1,0,1>)T(<1,1,0>)
@@ -75,16 +84,48 @@ void displayFrame(void)
     M=R(50,<1,0,1>)T(<1,1,0>)S(<2,2,2>)
     M=glm::scale(M,glm::vec3(2.0f,2.0f,2.0f));
     glutWireTorus(double innerRadius, double outerRadius,int nsides, int rings);
+    
+  
+    M=glm::rotate(glm::mat4(1.0f),angle,glm::vec3(0.0f,0.0f,-10.0f)); // odpowiada za obrot
+    M=glm::translate(M,glm::vec3(0.0f,0.0f,0.0f));
+    
+    M2=glm::translate(M2,glm::vec3(2.8f,0.0f,0.0f));
+    M2=glm::rotate(M2,angle,glm::vec3(0.0f,0.0f,10.0f)); // odpowiada za obrot
     */
     
-    M=glm::rotate(glm::mat4(1.0f),angle,glm::vec3(0.0f,1.0f,0.0f)); // odpowiada za obrot
-
-    // zaladowanie tego do przestrzeni
-      glMatrixMode(GL_PROJECTION);
+    // zaladowanie tego do przestrzeni P, a potem V i M
+    glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(glm::value_ptr(P));
     glMatrixMode(GL_MODELVIEW);
+    
+    // obracanie
+    glm::mat4 M=glm::mat4(1.0f);
+    M=glm::rotate(M,angle_y,glm::vec3(0.0f,1.0f,0.0f));
+    M=glm::rotate(M,angle_x,glm::vec3(1.0f,0.0f,0.0f));
     glLoadMatrixf(glm::value_ptr(V*M));
-    glutSolidTorus(0.5, 1,30, 24);  
+
+    
+    // gl Draw arrays
+    //*
+    //Kwadrat
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    //glVertexPointer(liczba wspolrzednych wierzcholka,typ tablicy z wierzcholkami,0,cubeVertices);
+    glVertexPointer(3,GL_FLOAT,0,cubeVertices);
+    glColorPointer(3,GL_FLOAT,0,cubeColors);	
+    glDrawArrays(GL_QUADS,0,cubeVertexCount);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);	
+    //*/
+    /*
+    glColor3d(0.5,1,0.5);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer( 3, GL_FLOAT, 0, geomVertices1);
+    glDrawArrays(GL_LINES,0,geomVertexCount1);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    */
+    
+    
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
 }
 
@@ -96,9 +137,15 @@ void nextFrame(void)
 
     int interval=actTime-lastTime; // liczy przedzial
     lastTime=actTime;
-    angle+=speed*interval/1000.0; // liczy predkosc z jaka musi sie obrocic
-
-    if(angle>360) angle-=360;
+    //angle+=speed*interval/1000.0; // liczy predkosc z jaka musi sie obrocic
+    angle_x+=speed_x*interval/1000.0;
+    angle_y+=speed_y*interval/1000.0;
+	
+    if (angle_x>360) angle_x-=360;
+    if (angle_x>360) angle_x+=360;
+    if (angle_y>360) angle_y-=360;
+    if (angle_y>360) angle_y+=360;
+    
     glutPostRedisplay();
 
 }
@@ -178,6 +225,7 @@ int main(int argc, char* argv[])
     glutInitWindowPosition(0,0);
     glutCreateWindow("Program OpenGL");        
     glutDisplayFunc(displayFrame);
+    glutIdleFunc(nextFrame);
 	    
     glEnable(GL_LIGHTING); // do cieniowania
     glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
@@ -188,7 +236,7 @@ int main(int argc, char* argv[])
     glEnable(GL_COLOR_MATERIAL); // sledzenie przez material kolorow
     glColor3d(0.1, 0.2, 1); // ustawia kolor rysowanego obiektu
 
-
+    glewInit();
     // obsluga przycisnietego i puszczonego klawisza
     glutSpecialFunc(keyDown);
     
