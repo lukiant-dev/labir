@@ -116,7 +116,7 @@ void displayFrame(void)
     
     //glVertexPointer(liczba wspolrzednych wierzcholka,typ tablicy z wierzcholkami,0,cubeVertices);
     glVertexPointer(3,GL_FLOAT,0,cubeVertices);
-    glColorPointer(3,GL_FLOAT,0,cubeColors);// do kolorow
+    glColorPointer(3,GL_FLOAT,0,cubeColors)// do kolorow;
     glTexCoordPointer( 2, GL_FLOAT, 0, geomTexCoords2);// do tekstury
 
     glDrawArrays(GL_QUADS,0,cubeVertexCount);
