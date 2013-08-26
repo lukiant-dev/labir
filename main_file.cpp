@@ -9,6 +9,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "tga.h"
 #include "cube.h"
+#include "latarnia.h"
 #define PI 3.14159265
 
 float speed=180; //360 stopni/s
@@ -21,9 +22,10 @@ int ekran_y=800;
 int obrot=2;
 int licznik=0;
 int ostatni_cel_x=0;
-float v_oddalania=0.01; // predkosc oddalania sie przy uzyciu strzalek UP, DOWN
+float v_oddalania=0.1; // predkosc oddalania sie przy uzyciu strzalek UP, DOWN
 float v_obracania=5; // kat obracania sie bohatera przy uzyciu strzalek LEFT, RIGHT  
 
+float sw1, sw2;
 float angle_x;
 float angle_y;
 float speed_x=0; //60 stopni/s
@@ -100,30 +102,122 @@ void displayFrame(void)
     glLoadMatrixf(glm::value_ptr(P));
     glMatrixMode(GL_MODELVIEW);
     
-    // obracanie
+   // glLoadIdentity();
+/*    
+    float lightPos[]={0,,1,1};//{0,sw1,0,1};
+    glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
+
+	
+    float lightPos2[]={0,1,0,0}; // wskazuje na przestrzen ktora oswietla
+    
+    glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
+    glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,lightPos2);
+    
+    glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,2);// kat rozwarcia stozka /2
+    glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,128); // 128 najbardziej skupione
+  */  
+    
     glm::mat4 M=glm::mat4(1.0f);
     M=glm::rotate(M,angle_y,glm::vec3(0.0f,1.0f,0.0f));
     M=glm::rotate(M,angle_x,glm::vec3(1.0f,0.0f,0.0f));
-    glLoadMatrixf(glm::value_ptr(V*M));
+  
 
+   
+    glLoadMatrixf(glm::value_ptr(V)); // albo polaczone
+/*
+    float lightPos[]={1,-0.5,-40};//{0,sw1,0,1};
+    glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
+*/
+      
+    // stozkowe nieruchome np. daszek
+    float lightPos[]={0,1.3,sw1,1};//{0,sw1,0,1};
+    glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
+
+/*	
+    float lightPos2[]={0,-1,0,0}; // wskazuje na przestrzen ktora oswietla
+    
+    glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
+    glLightfv(GL_LIGHT0,GL_SPOT_DIRECTION,lightPos2);
+    
+    glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,1);// kat rozwarcia stozka /2
+    glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,128); // 128 najbardziej skupione
+  */  
+
+    glLoadMatrixf(glm::value_ptr(V*M));
+    
+    
+    
+    // ustawienie latarki :)
+    
+    // obracanie
     
     // gl Draw arrays - metoda rysowania powierchni,ponizej zestaw funkcji, ktore wszystko ustawiaja
     glBindTexture(GL_TEXTURE_2D,tex);// do tekstury
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState(GL_COLOR_ARRAY);
+    
     
     //glVertexPointer(liczba wspolrzednych wierzcholka,typ tablicy z wierzcholkami,0,cubeVertices);
     glVertexPointer(3,GL_FLOAT,0,cubeVertices);
-    glColorPointer(3,GL_FLOAT,0,cubeColors);// do kolorow
+    glNormalPointer( GL_FLOAT, 0, cubeNormals);
     glTexCoordPointer( 2, GL_FLOAT, 0, geomTexCoords2);// do tekstury
+    glColorPointer(3,GL_FLOAT,0,cubeColors);// do kolorow
+    
+    
+    float amb[]={0,0,0,1};
+    float dif[]={0.7,0.5,0.5,1};
+    float spec[]={0,0,0,0};
+    
 
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, amb); 
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50);
+
+    //gLightfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    
     glDrawArrays(GL_QUADS,0,cubeVertexCount);
     
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);	
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState( GL_NORMAL_ARRAY );
+
+    
+    //daszek
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);   
+    
+    glVertexPointer( 3, GL_FLOAT, 0, daszekVertices );
+    glColorPointer( 3, GL_FLOAT, 0, daszekColors );
+    
+    glDrawArrays(GL_TRIANGLES,0,daszekVertexCount);
+   
+    
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_COLOR_ARRAY );
+    
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState( GL_NORMAL_ARRAY );
+
+    
+    glNormalPointer( GL_FLOAT, 0, latarniaNormals);
+    glVertexPointer(3,GL_FLOAT,0,latarniaVertices);
+    glColorPointer(3,GL_FLOAT,0,latarniaColors);// do kolorow
+    
+    glDrawArrays(GL_QUADS,0,latarniaVertexCount);
+   
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_COLOR_ARRAY );
+    
    
     
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
@@ -206,7 +300,23 @@ void keyDown(int c, int x, int y)
     
     }
     
+     
     glutPostRedisplay();
+}
+
+void keyDown2(unsigned char c, int x, int y) 
+{
+     if (c=='q')
+     {
+       sw1=sw1-2;
+       printf("sw= %f \n",sw1);
+     }
+      
+     if (c=='w')
+     {
+       sw1=sw1+2;
+       printf("sw= %f \n",sw1);
+     }
 }
 
 int main(int argc, char* argv[]) 
@@ -217,8 +327,8 @@ int main(int argc, char* argv[])
     pozycja_obserwatora[2]=-5;//os z
     cel_obserwatora[0]=0;
     cel_obserwatora[1]=0;
-    cel_obserwatora[2]=10;
-    
+    cel_obserwatora[2]=0;
+    sw1=-40;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(ekran_x,ekran_y);
@@ -226,22 +336,27 @@ int main(int argc, char* argv[])
     glutCreateWindow("Program OpenGL");        
     glutDisplayFunc(displayFrame);
     glutIdleFunc(nextFrame);
-	    
-    //glEnable(GL_LIGHTING); // do cieniowania
-    //glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
-    
-    //glShadeModel(GL_FLAT); // cienowanie plaske
-    glShadeModel(GL_SMOOTH); // cienowanie gladki
 
-    glEnable(GL_DEPTH_TEST); // wlacza Z-bufor w tym buforze znajduja sie odleglosci pikseli od obserwatora
-    glEnable(GL_COLOR_MATERIAL); // sledzenie przez material kolorow
-    glColor3d(0.1, 0.2, 1); // ustawia kolor rysowanego obiektu
-    glEnable(GL_TEXTURE_2D);  
-    glewInit();
+     glewInit();
     // obsluga przycisnietego i puszczonego klawisza
     glutSpecialFunc(keyDown);
+    glutKeyboardFunc(keyDown2);
+
     
+    glEnable(GL_LIGHTING); // do cieniowania
+    glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
     
+    //glShadeModel(GL_FLAT); // cienowanie plaske
+    //glShadeModel(GL_SMOOTH); // cienowanie gladki
+
+    glEnable(GL_DEPTH_TEST); // wlacza Z-bufor w tym buforze znajduja sie odleglosci pikseli od obserwatora
+    glEnable(GL_NORMALIZE); // normalizuje wektory 
+    //glEnable(GL_COLOR_MATERIAL); // sledzenie przez material kolorow
+    // glColor3d(0.1, 0.2, 1); // ustawia kolor rysowanego obiektu
+    
+    float lightPosAm[]={1,1,1,1};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightPosAm); // dodaje blasku hehe :)
+  
     // ustawienia tekstury i jej pobranie itp.    
     if (img.Load("bricks.tga")==IMG_OK) 
     {
@@ -269,6 +384,7 @@ int main(int argc, char* argv[])
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
 
     glutMainLoop();
     glDeleteTextures(1,&tex);// usuniecie przycisku do tekstury
