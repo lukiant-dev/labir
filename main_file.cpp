@@ -10,6 +10,7 @@
 #include "tga.h"
 #include "cube.h"
 #include "latarnia.h"
+#include "glm.h"
 #define PI 3.14159265
 
 float speed=180; //360 stopni/s
@@ -30,9 +31,9 @@ float angle_x;
 float angle_y;
 float speed_x=0; //60 stopni/s
 float speed_y=0; //60 stopni/s
-GLuint tex; //Globalnie
+GLuint tex,tex2; //Globalnie
 TGAImg img; //Obojętnie czy globalnie, czy lokalnie
-   
+ GLMmodel * buka;    // obiekt modelu z glm.h   
 
 void displayFrame(void) 
 {
@@ -218,6 +219,57 @@ void displayFrame(void)
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_COLOR_ARRAY );
     
+//buka!
+// to jeszcze nie działa z niewiadomych przyczyn
+/*
+ glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState( GL_NORMAL_ARRAY );
+
+//printf("%d \n", buka->texcoords);
+
+//printf("%d \n", buka->normals);
+//printf("%d \n", buka->vertices);
+printf("%d \n", &buka->vertices);
+
+    glTexCoordPointer( 2, GL_FLOAT, 0, buka->texcoords);// do tekstury
+    glNormalPointer( GL_FLOAT, 0, buka->normals);
+    glVertexPointer(3,GL_FLOAT,0,buka->vertices);
+
+    
+    glDrawArrays(GL_TRIANGLE_STRIP,0,buka->numvertices);
+   
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+*/
+/* glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+   // glEnableClientState( GL_NORMAL_ARRAY );
+
+//printf("%d \n", buka->texcoords);
+
+//printf("%d \n", buka->normals);
+//printf("%d \n", buka->vertices);
+
+
+    glTexCoordPointer( 2, GL_FLOAT, 0, buka->texcoords);// do tekstury
+    glNormalPointer( GL_FLOAT, 0, (buka->normals));
+    glVertexPointer(3,GL_FLOAT,0,(buka->vertices+3));
+for (int i=0; i<100; i++){
+ printf("%d vertex \n", buka->vertices[i]);
+}
+ //   sleep(10);
+    glDrawArrays(GL_POLYGON,0,buka->numvertices-1);
+   
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY); */
+
+glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
+glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
    
     
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
@@ -341,7 +393,8 @@ int main(int argc, char* argv[])
     // obsluga przycisnietego i puszczonego klawisza
     glutSpecialFunc(keyDown);
     glutKeyboardFunc(keyDown2);
-
+// funkcji z glm.cpp, zaskakująco wczytuje model 
+buka = glmReadOBJ("buka.obj");
     
     glEnable(GL_LIGHTING); // do cieniowania
     glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
@@ -357,6 +410,7 @@ int main(int argc, char* argv[])
     float lightPosAm[]={1,1,1,1};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightPosAm); // dodaje blasku hehe :)
   
+// tekstury zrobię potem w tablicy i załatwię pętlą for, żeby nie powielać tyle kodu
     // ustawienia tekstury i jej pobranie itp.    
     if (img.Load("bricks.tga")==IMG_OK) 
     {
@@ -386,8 +440,34 @@ int main(int argc, char* argv[])
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
     glEnable(GL_TEXTURE_2D);
 
+    if (img.Load("bukaTex.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex2); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex2); //Przetwarzaj uchwyt tex
+      if (img.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
+      else if (img.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glEnable(GL_TEXTURE_2D);
+
     glutMainLoop();
     glDeleteTextures(1,&tex);// usuniecie przycisku do tekstury
-    
+      glDeleteTextures(1,&tex2);// usuniecie przycisku do tekstury
     return 0;
 }
