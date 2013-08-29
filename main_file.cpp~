@@ -3,6 +3,9 @@
 #include "cube.h"
 #include "latarnia.h"
 #include "elementy.h"
+#include "glm.h"
+#define PI 3.14159265
+
 float speed=180; //360 stopni/s
 int lastTime=0;
 float angle, angle2;
@@ -21,9 +24,9 @@ float angle_x;
 float angle_y;
 float speed_x=0; //60 stopni/s
 float speed_y=0; //60 stopni/s
-GLuint tex; //Globalnie
+GLuint tex,tex2; //Globalnie
 TGAImg img; //Obojętnie czy globalnie, czy lokalnie
-
+ GLMmodel * buka;    // obiekt modelu z glm.h   
 
 void displayFrame(void) 
 {
@@ -111,8 +114,7 @@ void displayFrame(void)
     glm::mat4 M=glm::mat4(1.0f);
     M=glm::rotate(M,angle_y,glm::vec3(0.0f,1.0f,0.0f));
     M=glm::rotate(M,angle_x,glm::vec3(1.0f,0.0f,0.0f));
-    
-    
+  
 
    
     glLoadMatrixf(glm::value_ptr(V)); // albo polaczone
@@ -122,7 +124,7 @@ void displayFrame(void)
 */
       
     // stozkowe nieruchome np. daszek
-    float lightPos[]={0,1.8,-40,1};//{0,sw1,0,1};
+    float lightPos[]={0,1.3,sw1,1};//{0,sw1,0,1};
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
 
 /*	
@@ -179,10 +181,62 @@ void displayFrame(void)
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState( GL_NORMAL_ARRAY );
 
-    draw_latarnia(V,0,0,-40);     
-    draw_corridor(V,0,0,41);     
     
     
+//buka!
+// to jeszcze nie działa z niewiadomych przyczyn
+/*
+ glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState( GL_NORMAL_ARRAY );
+
+//printf("%d \n", buka->texcoords);
+
+//printf("%d \n", buka->normals);
+//printf("%d \n", buka->vertices);
+printf("%d \n", &buka->vertices);
+
+    glTexCoordPointer( 2, GL_FLOAT, 0, buka->texcoords);// do tekstury
+    glNormalPointer( GL_FLOAT, 0, buka->normals);
+    glVertexPointer(3,GL_FLOAT,0,buka->vertices);
+
+    
+    glDrawArrays(GL_TRIANGLE_STRIP,0,buka->numvertices);
+   
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+*/
+/* glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+   // glEnableClientState( GL_NORMAL_ARRAY );
+
+//printf("%d \n", buka->texcoords);
+
+//printf("%d \n", buka->normals);
+//printf("%d \n", buka->vertices);
+
+
+    glTexCoordPointer( 2, GL_FLOAT, 0, buka->texcoords);// do tekstury
+    glNormalPointer( GL_FLOAT, 0, (buka->normals));
+    glVertexPointer(3,GL_FLOAT,0,(buka->vertices+3));
+for (int i=0; i<100; i++){
+ printf("%d vertex \n", buka->vertices[i]);
+}
+ //   sleep(10);
+    glDrawArrays(GL_POLYGON,0,buka->numvertices-1);
+   
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY); */
+
+glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
+glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
+   
+    draw_latarnia(V,0,0,-40);
+    draw_corridor(V,0,0,41);
     
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
 }
@@ -272,13 +326,13 @@ void keyDown2(unsigned char c, int x, int y)
 {
      if (c=='q')
      {
-       sw1=sw1-0.1;
+       sw1=sw1-2;
        printf("sw= %f \n",sw1);
      }
       
      if (c=='w')
      {
-       sw1=sw1+0.1;
+       sw1=sw1+2;
        printf("sw= %f \n",sw1);
      }
 }
@@ -292,19 +346,40 @@ int main(int argc, char* argv[])
     cel_obserwatora[0]=0;
     cel_obserwatora[1]=0;
     cel_obserwatora[2]=0;
-    sw1=2;
-    
-    
-    
+    sw1=-40;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(ekran_x,ekran_y);
     glutInitWindowPosition(0,0);
     glutCreateWindow("Program OpenGL");        
+    glutDisplayFunc(displayFrame);
+    glutIdleFunc(nextFrame);
+
+     glewInit();
+    // obsluga przycisnietego i puszczonego klawisza
+    glutSpecialFunc(keyDown);
+    glutKeyboardFunc(keyDown2);
+// funkcji z glm.cpp, zaskakująco wczytuje model 
+buka = glmReadOBJ("buka.obj");
+    
+    glEnable(GL_LIGHTING); // do cieniowania
+    glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
+    
+    //glShadeModel(GL_FLAT); // cienowanie plaske
+    //glShadeModel(GL_SMOOTH); // cienowanie gladki
+
+    glEnable(GL_DEPTH_TEST); // wlacza Z-bufor w tym buforze znajduja sie odleglosci pikseli od obserwatora
+    glEnable(GL_NORMALIZE); // normalizuje wektory 
+    //glEnable(GL_COLOR_MATERIAL); // sledzenie przez material kolorow
+    // glColor3d(0.1, 0.2, 1); // ustawia kolor rysowanego obiektu
+    
+    float lightPosAm[]={1,1,1,1};
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightPosAm); // dodaje blasku hehe :)
+  
+// tekstury zrobię potem w tablicy i załatwię pętlą for, żeby nie powielać tyle kodu
     // ustawienia tekstury i jej pobranie itp.    
     if (img.Load("bricks.tga")==IMG_OK) 
     {
-
       glGenTextures(1,&tex); //Zainicjuj uchwyt tex
       glBindTexture(GL_TEXTURE_2D,tex); //Przetwarzaj uchwyt tex
       if (img.GetBPP()==24) //Obrazek 24bit
@@ -323,19 +398,24 @@ int main(int argc, char* argv[])
     {
 	  
     }
-    
-    if (img.Load("bricks.tga")==IMG_OK) 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+
+    if (img3.Load("bricks2.tga")==IMG_OK) 
     {
 
-      glGenTextures(1,&tex); //Zainicjuj uchwyt tex
-      glBindTexture(GL_TEXTURE_2D,tex); //Przetwarzaj uchwyt tex
-      if (img.GetBPP()==24) //Obrazek 24bit
-	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
-	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
-      else if (img.GetBPP()==32)
+      glGenTextures(1,&tex3); //Zainicjuj uchwyt tex3
+      glBindTexture(GL_TEXTURE_2D,tex3); //Przetwarzaj uchwyt tex3
+      if (img3.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img3.GetImg());
+      else if (img3.GetBPP()==32)
 	  //Obrazek 32bit
-	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
-	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img3.GetImg());
       else 
       {
 	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
@@ -345,12 +425,44 @@ int main(int argc, char* argv[])
     {
 	  
     }
-    //daszek
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+
+    if (img4.Load("bricks.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex4); //Zainicjuj uchwyt tex4
+      glBindTexture(GL_TEXTURE_2D,tex4); //Przetwarzaj uchwyt tex4
+      if (img4.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img4.GetWidth(),img4.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img4.GetImg());
+      else if (img4.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img4.GetWidth(),img4.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img4.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+  
     if (img5.Load("bricks1.tga")==IMG_OK) 
     {
-      printf("ok");
-      glGenTextures(1,&tex5); //Zainicjuj uchwyt tex
-      glBindTexture(GL_TEXTURE_2D,tex5); //Przetwarzaj uchwyt tex
+
+      glGenTextures(1,&tex5); //Zainicjuj uchwyt tex5
+      glBindTexture(GL_TEXTURE_2D,tex5); //Przetwarzaj uchwyt tex5
       if (img5.GetBPP()==24) //Obrazek 24bit
 	  glTexImage2D(GL_TEXTURE_2D,0,3,img5.GetWidth(),img5.GetHeight(),0,
 	  GL_RGB,GL_UNSIGNED_BYTE,img5.GetImg());
@@ -368,41 +480,24 @@ int main(int argc, char* argv[])
 	  
     }
 	
-     //daszek
-    if (img3.Load("bricks2.tga")==IMG_OK) 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+
+    if (img.Load("bukaTex.tga")==IMG_OK) 
     {
 
-      glGenTextures(1,&tex3); //Zainicjuj uchwyt tex
-      glBindTexture(GL_TEXTURE_2D,tex3); //Przetwarzaj uchwyt tex
-      if (img3.GetBPP()==24) //Obrazek 24bit
-	  glTexImage2D(GL_TEXTURE_2D,0,3,img3.GetWidth(),img3.GetHeight(),0,
-	  GL_RGB,GL_UNSIGNED_BYTE,img3.GetImg());
-      else if (img3.GetBPP()==32)
+      glGenTextures(1,&tex2); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex2); //Przetwarzaj uchwyt tex
+      if (img.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
+      else if (img.GetBPP()==32)
 	  //Obrazek 32bit
-	  glTexImage2D(GL_TEXTURE_2D,0,4,img3.GetWidth(),img3.GetHeight(),0,
-	  GL_RGBA,GL_UNSIGNED_BYTE,img3.GetImg());
-      else 
-      {
-	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
-      }
-    } 
-    else 
-    {
-	  
-    }	 
-    
-     if (img4.Load("bricks.tga")==IMG_OK) 
-    {
-
-      glGenTextures(1,&tex4); //Zainicjuj uchwyt tex
-      glBindTexture(GL_TEXTURE_2D,tex4); //Przetwarzaj uchwyt tex
-      if (img4.GetBPP()==24) //Obrazek 24bit
-	  glTexImage2D(GL_TEXTURE_2D,0,3,img4.GetWidth(),img4.GetHeight(),0,
-	  GL_RGB,GL_UNSIGNED_BYTE,img4.GetImg());
-      else if (img4.GetBPP()==32)
-	  //Obrazek 32bit
-	  glTexImage2D(GL_TEXTURE_2D,0,4,img4.GetWidth(),img4.GetHeight(),0,
-	  GL_RGBA,GL_UNSIGNED_BYTE,img4.GetImg());
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
       else 
       {
 	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
@@ -413,42 +508,16 @@ int main(int argc, char* argv[])
 	  
     }
 	
-	
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
     glEnable(GL_TEXTURE_2D);
 
-    
-    glutDisplayFunc(displayFrame);
-    glutIdleFunc(nextFrame);
-
-     glewInit();
-    // obsluga przycisnietego i puszczonego klawisza
-    glutSpecialFunc(keyDown);
-    glutKeyboardFunc(keyDown2);
-
-    
-    glEnable(GL_LIGHTING); // do cieniowania
-    glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
-    
-    //glShadeModel(GL_FLAT); // cienowanie plaske
-    //glShadeModel(GL_SMOOTH); // cienowanie gladki
-
-    glEnable(GL_DEPTH_TEST); // wlacza Z-bufor w tym buforze znajduja sie odleglosci pikseli od obserwatora
-    glEnable(GL_NORMALIZE); // normalizuje wektory 
-    //glEnable(GL_COLOR_MATERIAL); // sledzenie przez material kolorow
-    // glColor3d(0.1, 0.2, 1); // ustawia kolor rysowanego obiektu
-    
-    float lightPosAm[]={1,1,1,1};
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightPosAm); // dodaje blasku hehe :)
-  
     glutMainLoop();
     glDeleteTextures(1,&tex);// usuniecie przycisku do tekstury
     glDeleteTextures(1,&tex2);// usuniecie przycisku do tekstury
     glDeleteTextures(1,&tex3);// usuniecie przycisku do tekstury
     glDeleteTextures(1,&tex4);// usuniecie przycisku do tekstury
-     
+    glDeleteTextures(1,&tex5);// usuniecie przycisku do tekstury
+    
     return 0;
 }

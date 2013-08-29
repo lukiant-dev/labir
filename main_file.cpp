@@ -1,15 +1,8 @@
-#include <GL/glew.h>
-#include <GL/glut.h>
-#include <stdio.h> //Przydatne do wypisywania komunikatów na konsoli
-#include <stdlib.h>
-#include <iostream>
-#include <cmath>
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "library.h"
 #include "tga.h"
 #include "cube.h"
 #include "latarnia.h"
+#include "elementy.h"
 #include "glm.h"
 #define PI 3.14159265
 
@@ -189,35 +182,6 @@ void displayFrame(void)
     glDisableClientState( GL_NORMAL_ARRAY );
 
     
-    //daszek
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);   
-    
-    glVertexPointer( 3, GL_FLOAT, 0, daszekVertices );
-    glColorPointer( 3, GL_FLOAT, 0, daszekColors );
-    
-    glDrawArrays(GL_TRIANGLES,0,daszekVertexCount);
-   
-    
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_COLOR_ARRAY );
-    
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState( GL_NORMAL_ARRAY );
-
-    
-    glNormalPointer( GL_FLOAT, 0, latarniaNormals);
-    glVertexPointer(3,GL_FLOAT,0,latarniaVertices);
-    glColorPointer(3,GL_FLOAT,0,latarniaColors);// do kolorow
-    
-    glDrawArrays(GL_QUADS,0,latarniaVertexCount);
-   
-    glDisableClientState( GL_NORMAL_ARRAY );
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_COLOR_ARRAY );
     
 //buka!
 // to jeszcze nie działa z niewiadomych przyczyn
@@ -271,6 +235,8 @@ for (int i=0; i<100; i++){
 glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
 glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
    
+    draw_latarnia(V,0,0,-40);
+    draw_corridor(V,0,0,41);
     
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
 }
@@ -414,7 +380,6 @@ buka = glmReadOBJ("buka.obj");
     // ustawienia tekstury i jej pobranie itp.    
     if (img.Load("bricks.tga")==IMG_OK) 
     {
-
       glGenTextures(1,&tex); //Zainicjuj uchwyt tex
       glBindTexture(GL_TEXTURE_2D,tex); //Przetwarzaj uchwyt tex
       if (img.GetBPP()==24) //Obrazek 24bit
@@ -424,6 +389,87 @@ buka = glmReadOBJ("buka.obj");
 	  //Obrazek 32bit
 	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
 	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+
+    if (img3.Load("bricks2.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex3); //Zainicjuj uchwyt tex3
+      glBindTexture(GL_TEXTURE_2D,tex3); //Przetwarzaj uchwyt tex3
+      if (img3.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img3.GetImg());
+      else if (img3.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img3.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+
+    if (img4.Load("bricks.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex4); //Zainicjuj uchwyt tex4
+      glBindTexture(GL_TEXTURE_2D,tex4); //Przetwarzaj uchwyt tex4
+      if (img4.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img4.GetWidth(),img4.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img4.GetImg());
+      else if (img4.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img4.GetWidth(),img4.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img4.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+  
+    if (img5.Load("bricks1.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex5); //Zainicjuj uchwyt tex5
+      glBindTexture(GL_TEXTURE_2D,tex5); //Przetwarzaj uchwyt tex5
+      if (img5.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img5.GetWidth(),img5.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img5.GetImg());
+      else if (img5.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img5.GetWidth(),img5.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img5.GetImg());
       else 
       {
 	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
@@ -468,6 +514,10 @@ buka = glmReadOBJ("buka.obj");
 
     glutMainLoop();
     glDeleteTextures(1,&tex);// usuniecie przycisku do tekstury
-      glDeleteTextures(1,&tex2);// usuniecie przycisku do tekstury
+    glDeleteTextures(1,&tex2);// usuniecie przycisku do tekstury
+    glDeleteTextures(1,&tex3);// usuniecie przycisku do tekstury
+    glDeleteTextures(1,&tex4);// usuniecie przycisku do tekstury
+    glDeleteTextures(1,&tex5);// usuniecie przycisku do tekstury
+    
     return 0;
 }
