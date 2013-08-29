@@ -1,0 +1,511 @@
+#include "latarnia.h"
+int daszekVertexCount=24;//16;
+
+float daszekVertices[]={
+      0,1.5,0,
+      -0.25,1.2,-0.25,
+      -0.25,1.2,0.25,
+      
+      0,1.5,0,
+      0.25,1.2,-0.25,
+      0.25,1.2,0.25,
+      
+      0,1.5,0,
+      0.25,1.2,0.25,
+      -0.25,1.2,0.25,
+      
+      0,1.5,0,
+      0.25,1.2,-0.25,
+      -0.25,1.2,-0.25,
+      
+      
+      0,0.7,0,
+      -0.15,0.8,-0.15,
+      0.15,0.8,-0.15,
+      
+      0,0.7,0,
+      0.15,0.8,-0.15,
+      0.15,0.8,0.15,
+      
+      0,0.7,0,
+      0.15,0.8,0.15,
+      -0.15,0.8,0.15,
+      
+      0,0.7,0,
+      -0.15,0.8,0.15,
+      -0.15,0.8,-0.15
+      
+      
+     
+ 
+};
+
+float daszekColors[]={
+  
+	0,1,0,
+	0,1,0,
+	0,1,0,
+	
+	0,1,0,
+	0,1,0,
+	0,1,0,
+	
+	0,1,0,
+	0,1,0,
+	0,1,0,
+	
+	0,1,0,
+	0,1,0,
+	0,1,0,
+	
+	0,1,0,
+	0,1,0,
+	0,1,0,
+	
+	0,1,0,
+	0,1,0,
+	0,1,0,
+	
+	0,1,0,
+	0,1,0,
+	0,1,0,
+	
+	0,1,0,
+	0,1,0,
+	0,1,0
+	
+};
+
+// tablica ze wspolrzednymi tesktury - troche juz wiem jak to dziala
+float daszekTexCoords2[]={
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1
+	
+	
+};
+
+// tablica z wpolrzednymi do wektorow normalnych
+float daszekNormals[]={
+  0,0,0
+};
+
+int latarniaVertexCount=32;//16;
+
+float latarniaVertices[]={
+      
+      -0.05,-0.7,-0.05,
+      -0.05,1,-0.05,
+      -0.05,1,0.05,
+      -0.05,-0.7,0.05,
+      
+      
+      0.05,-0.7,-0.05,
+      0.05,1,-0.05,
+      0.05,1,0.05,
+      0.05,-0.7,0.05,
+      
+      0.05,-0.7,-0.05,
+      -0.05,-0.7,-0.05,
+      -0.05,1,-0.05,
+      0.05,1,-0.05,
+      
+      0.05,-0.7,0.05,
+      0.05,1,0.05,
+      -0.05,1,0.05,
+      -0.05,-0.7,0.05,
+    
+      //podstawa
+      -0.05,-0.7,-0.05,
+      -0.1,-1,-0.1,
+      -0.1,-1,0.1,
+      -0.05,-0.7,0.05,
+      
+      
+      0.05,-0.7,-0.05,
+      0.1,-1,-0.1,
+      0.1,-1,0.1,
+      0.05,-0.7,0.05,
+      
+      0.05,-0.7,-0.05,
+      -0.05,-0.7,-0.05,
+      -0.1,-1,-0.1,
+  
+      0.1,-1,-0.1,      
+      0.05,-0.7,0.05,
+      0.1,-1,0.1,
+      -0.1,-1,0.1,
+      -0.05,-0.7,0.05,
+     
+      
+ 
+};
+
+float latarniaColors[]={
+  
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1
+	
+};
+
+// tablica ze wspolrzednymi tesktury - troche juz wiem jak to dziala
+float latarniaTexCoords2[]={
+	0,0, 2,0, 2,2, 0,2,
+	0,0, 2,0, 2,2, 0,2,
+	0,0, 2,0, 2,2, 0,2,
+	0,0, 2,0, 2,2, 0,2,
+	
+	
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1
+	
+};
+
+// tablica z wpolrzednymi do wektorow normalnych
+float latarniaNormals[]={
+  
+    
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  
+  0,-1,0,
+  0,-1,0,
+  0,-1,0,
+  0,-1,0
+};
+
+int lightVertexCount=16;//16;
+
+float lightVertices[]={
+      
+      
+      -0.25,1.2,0.25,
+      -0.25,1.2,-0.25,
+      -0.15,0.8,-0.15,
+      -0.15,0.8,0.15,
+      
+      
+      
+      0.25,1.2,-0.25,
+      0.25,1.2,0.25,
+      0.15,0.8,0.15,
+      0.15,0.8,-0.15,
+      
+      
+      
+      0.25,1.2,0.25,
+      -0.25,1.2,0.25,
+      -0.15,0.8,0.15,
+      0.15,0.8,0.15,
+      
+      
+      0.25,1.2,-0.25,
+      -0.25,1.2,-0.25,
+      -0.15,0.8,-0.15,
+      0.15,0.8,-0.15
+      
+};
+
+float lightColors[]={
+  
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	
+	1,1,1,
+	1,1,1,
+	1,1,1,
+	1,1,1
+	
+	
+};
+
+// tablica ze wspolrzednymi tesktury - troche juz wiem jak to dziala
+float lightTexCoords2[]={
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	0,0, 1,0, 1,1, 0,1,
+	
+};
+
+// tablica z wpolrzednymi do wektorow normalnych
+float lightNormals[]={
+  
+        -0.25,1.2,0.25,
+      -0.25,1.2,-0.25,
+      -0.15,0.8,-0.15,
+      -0.15,0.8,0.15,
+      
+      
+      
+      0.25,1.2,-0.25,
+      0.25,1.2,0.25,
+      0.15,0.8,0.15,
+      0.15,0.8,-0.15,
+      
+      
+      
+      0.25,1.2,0.25,
+      -0.25,1.2,0.25,
+      -0.15,0.8,0.15,
+      0.15,0.8,0.15,
+      
+      
+      0.25,1.2,-0.25,
+      -0.25,1.2,-0.25,
+      -0.15,0.8,-0.15,
+      0.15,0.8,-0.15
+
+    
+};
+
+GLuint tex5, tex3; //Globalnie
+TGAImg img5, img3; //Obojętnie czy globalnie, czy lokalnie
+
+
+void draw_latarnia(glm::mat4 V, float x, float y, float z)
+{
+    glm::mat4 M=glm::mat4(1.0f);
+    M=glm::translate(M,glm::vec3(x,y,z));
+
+    glLoadMatrixf(glm::value_ptr(V*M));
+    
+    
+ /*	  //daszek
+    if (img3.Load("bricks2.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex3); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex3); //Przetwarzaj uchwyt tex
+      if (img3.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img3.GetImg());
+      else if (img3.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img3.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	
+      
+      
+      
+    }
+//*/	
+
+    	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,tex5);// do tekstury
+   
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);   
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
+    glVertexPointer( 3, GL_FLOAT, 0, daszekVertices );
+    glColorPointer( 3, GL_FLOAT, 0, daszekColors );
+    glTexCoordPointer( 2, GL_FLOAT, 0, daszekTexCoords2);// do tekstury
+     
+    glDrawArrays(GL_TRIANGLES,0,daszekVertexCount);
+   
+    
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_COLOR_ARRAY );
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    
+    
+    // ustawienia tekstury i jej pobranie itp.    
+   
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    
+    
+    glNormalPointer( GL_FLOAT, 0, latarniaNormals);
+    glVertexPointer(3,GL_FLOAT,0,latarniaVertices);
+    glColorPointer(3,GL_FLOAT,0,latarniaColors);// do kolorow
+    glTexCoordPointer( 2, GL_FLOAT, 0, latarniaTexCoords2);// do tekstury
+     
+    
+    glDrawArrays(GL_QUADS,0,latarniaVertexCount);
+   
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_COLOR_ARRAY );
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,tex3);// do tekstury
+
+  
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      
+    
+    glNormalPointer( GL_FLOAT, 0, lightNormals);
+    glVertexPointer(3,GL_FLOAT,0,lightVertices);
+    glColorPointer(3,GL_FLOAT,0,lightColors);// do kolorow
+    
+    glDrawArrays(GL_QUADS,0,lightVertexCount);
+   
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+    glDisableClientState( GL_COLOR_ARRAY );
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    
+ 
+    
+    
+    
+    
+    
+    
+/*    
+       //daszek
+    if (img5.Load("bricks1.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex5); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex5); //Przetwarzaj uchwyt tex
+      if (img5.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img5.GetWidth(),img5.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img5.GetImg());
+      else if (img5.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img5.GetWidth(),img5.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img5.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+	
+    	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    */
+    
+    
+    
+    
+    
+}

@@ -1,8 +1,8 @@
 LIBS=-lGL -lglut -lGLEW
 CC=g++
 
-SOURCES=main_file.cpp tga.cpp
-HEADERS=tga.h cube.h latarnia.h
+SOURCES=main_file.cpp tga.cpp latarnia.cpp elementy.cpp glm.cpp
+HEADERS=tga.h cube.h latarnia.h elementy.h glm.h
 OBJECTS=$(SOURCES:.cpp=.o)
 
 all: main_file

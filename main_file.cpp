@@ -1,17 +1,8 @@
-#include <GL/glew.h>
-#include <GL/glut.h>
-#include <stdio.h> //Przydatne do wypisywania komunikatów na konsoli
-#include <stdlib.h>
-#include <iostream>
-#include <cmath>
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "library.h"
 #include "tga.h"
 #include "cube.h"
 #include "latarnia.h"
-#define PI 3.14159265
-
+#include "elementy.h"
 float speed=180; //360 stopni/s
 int lastTime=0;
 float angle, angle2;
@@ -32,7 +23,7 @@ float speed_x=0; //60 stopni/s
 float speed_y=0; //60 stopni/s
 GLuint tex; //Globalnie
 TGAImg img; //Obojętnie czy globalnie, czy lokalnie
-   
+
 
 void displayFrame(void) 
 {
@@ -120,7 +111,8 @@ void displayFrame(void)
     glm::mat4 M=glm::mat4(1.0f);
     M=glm::rotate(M,angle_y,glm::vec3(0.0f,1.0f,0.0f));
     M=glm::rotate(M,angle_x,glm::vec3(1.0f,0.0f,0.0f));
-  
+    
+    
 
    
     glLoadMatrixf(glm::value_ptr(V)); // albo polaczone
@@ -130,7 +122,7 @@ void displayFrame(void)
 */
       
     // stozkowe nieruchome np. daszek
-    float lightPos[]={0,1.3,sw1,1};//{0,sw1,0,1};
+    float lightPos[]={0,1.8,-40,1};//{0,sw1,0,1};
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
 
 /*	
@@ -187,38 +179,10 @@ void displayFrame(void)
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState( GL_NORMAL_ARRAY );
 
-    
-    //daszek
-    
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);   
-    
-    glVertexPointer( 3, GL_FLOAT, 0, daszekVertices );
-    glColorPointer( 3, GL_FLOAT, 0, daszekColors );
-    
-    glDrawArrays(GL_TRIANGLES,0,daszekVertexCount);
-   
-    
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_COLOR_ARRAY );
+    draw_latarnia(V,0,0,-40);     
+    draw_corridor(V,0,0,41);     
     
     
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState( GL_NORMAL_ARRAY );
-
-    
-    glNormalPointer( GL_FLOAT, 0, latarniaNormals);
-    glVertexPointer(3,GL_FLOAT,0,latarniaVertices);
-    glColorPointer(3,GL_FLOAT,0,latarniaColors);// do kolorow
-    
-    glDrawArrays(GL_QUADS,0,latarniaVertexCount);
-   
-    glDisableClientState( GL_NORMAL_ARRAY );
-    glDisableClientState( GL_VERTEX_ARRAY );
-    glDisableClientState( GL_COLOR_ARRAY );
-    
-   
     
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
 }
@@ -308,13 +272,13 @@ void keyDown2(unsigned char c, int x, int y)
 {
      if (c=='q')
      {
-       sw1=sw1-2;
+       sw1=sw1-0.1;
        printf("sw= %f \n",sw1);
      }
       
      if (c=='w')
      {
-       sw1=sw1+2;
+       sw1=sw1+0.1;
        printf("sw= %f \n",sw1);
      }
 }
@@ -328,12 +292,135 @@ int main(int argc, char* argv[])
     cel_obserwatora[0]=0;
     cel_obserwatora[1]=0;
     cel_obserwatora[2]=0;
-    sw1=-40;
+    sw1=2;
+    
+    
+    
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(ekran_x,ekran_y);
     glutInitWindowPosition(0,0);
     glutCreateWindow("Program OpenGL");        
+    // ustawienia tekstury i jej pobranie itp.    
+    if (img.Load("bricks.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex); //Przetwarzaj uchwyt tex
+      if (img.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
+      else if (img.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    
+    if (img.Load("bricks.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex); //Przetwarzaj uchwyt tex
+      if (img.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
+      else if (img.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    //daszek
+    if (img5.Load("bricks1.tga")==IMG_OK) 
+    {
+      printf("ok");
+      glGenTextures(1,&tex5); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex5); //Przetwarzaj uchwyt tex
+      if (img5.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img5.GetWidth(),img5.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img5.GetImg());
+      else if (img5.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img5.GetWidth(),img5.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img5.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+	
+     //daszek
+    if (img3.Load("bricks2.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex3); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex3); //Przetwarzaj uchwyt tex
+      if (img3.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img3.GetImg());
+      else if (img3.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img3.GetWidth(),img3.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img3.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }	 
+    
+     if (img4.Load("bricks.tga")==IMG_OK) 
+    {
+
+      glGenTextures(1,&tex4); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex4); //Przetwarzaj uchwyt tex
+      if (img4.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img4.GetWidth(),img4.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img4.GetImg());
+      else if (img4.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img4.GetWidth(),img4.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img4.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+	
+	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+
+    
     glutDisplayFunc(displayFrame);
     glutIdleFunc(nextFrame);
 
@@ -357,37 +444,11 @@ int main(int argc, char* argv[])
     float lightPosAm[]={1,1,1,1};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightPosAm); // dodaje blasku hehe :)
   
-    // ustawienia tekstury i jej pobranie itp.    
-    if (img.Load("bricks.tga")==IMG_OK) 
-    {
-
-      glGenTextures(1,&tex); //Zainicjuj uchwyt tex
-      glBindTexture(GL_TEXTURE_2D,tex); //Przetwarzaj uchwyt tex
-      if (img.GetBPP()==24) //Obrazek 24bit
-	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
-	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
-      else if (img.GetBPP()==32)
-	  //Obrazek 32bit
-	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
-	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
-      else 
-      {
-	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
-      }
-    } 
-    else 
-    {
-	  
-    }
-	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glEnable(GL_TEXTURE_2D);
-
     glutMainLoop();
     glDeleteTextures(1,&tex);// usuniecie przycisku do tekstury
-    
+    glDeleteTextures(1,&tex5);// usuniecie przycisku do tekstury
+    glDeleteTextures(1,&tex3);// usuniecie przycisku do tekstury
+    glDeleteTextures(1,&tex4);// usuniecie przycisku do tekstury
+     
     return 0;
 }

@@ -1,289 +1,48 @@
-  
 #ifndef LATARNIA_H
 #define LATARNIA_H
+#include "library.h"
+#include "tga.h"
+extern int daszekVertexCount;
 
-int daszekVertexCount=12;//16;
+extern float daszekVertices[];
 
-float daszekVertices[]={
-      0,1.5,-40,
-      -0.5,1.2,-40.5,
-      -0.5,1.2,-39.5,
-      
-      0,1.5,-40,
-      0.5,1.2,-40.5,
-      0.5,1.2,-39.5,
-      
-      0,1.5,-40,
-      0.5,1.2,-39.5,
-      -0.5,1.2,-39.5,
-      
-      0,1.5,-40,
-      0.5,1.2,-40.5,
-      -0.5,1.2,-40.5
-      
-      
- 
-};
-
-float daszekColors[]={
-  
-	0,1,0,
-	0,1,0,
-	0,1,0,
-	
-	0,1,0,
-	0,1,0,
-	0,1,0,
-	
-	0,1,0,
-	0,1,0,
-	0,1,0,
-	
-	0,1,0,
-	0,1,0,
-	0,1,0,
-	
-};
+extern float daszekColors[];
 
 // tablica ze wspolrzednymi tesktury - troche juz wiem jak to dziala
-float daszekTexCoords2[]={
-	0,0
-};
+extern float daszekTexCoords2[];
 
 // tablica z wpolrzednymi do wektorow normalnych
-float daszekNormals[]={
-  0,0,0
-};
+extern float daszekNormals[];
 
-int latarniaVertexCount=52;//16;
+extern int latarniaVertexCount;
 
-float latarniaVertices[]={
-      
-      
-      -0.25,1.35,-40.25,
-      -0.25,1,-40.25,
-      -0.25,1,-39.75,
-      -0.25,1.35,-39.75,
-      
-      
-      0.25,1.35,-40.25,
-      0.25,1,-40.25,
-      0.25,1,-39.75,
-      0.25,1.35,-39.75,
-      
-      0.25,1.35,-40.25,
-      -0.25,1.35,-40.25,
-      -0.25,1,-40.25,
-      0.25,1,-40.25,
-      
-      0.25,1.35,-39.75,
-      0.25,1,-39.75,
-      -0.25,1,-39.75,
-      -0.25,1.35,-39.75,
-      
-      -0.25,1,-40.25,
-      -0.25,1,-39.75,
-      0.25,1,-39.75,
-      0.25,1,-40.25,
-     
-      
-      -0.05,-0.7,-40.05,
-      -0.05,1,-40.05,
-      -0.05,1,-39.95,
-      -0.05,-0.7,-39.95,
-      
-      
-      0.05,-0.7,-40.05,
-      0.05,1,-40.05,
-      0.05,1,-39.95,
-      0.05,-0.7,-39.95,
-      
-      0.05,-0.7,-40.05,
-      -0.05,-0.7,-40.05,
-      -0.05,1,-40.05,
-      0.05,1,-40.05,
-      
-      0.05,-0.7,-39.95,
-      0.05,1,-39.95,
-      -0.05,1,-39.95,
-      -0.05,-0.7,-39.95,
-    
-      //podstawa
-      -0.05,-0.7,-40.05,
-      -0.1,-1,-40.1,
-      -0.1,-1,-39.90,
-      -0.05,-0.7,-39.95,
-      
-      
-      0.05,-0.7,-40.05,
-      0.1,-1,-40.1,
-      0.1,-1,-39.90,
-      0.05,-0.7,-39.95,
-      
-      0.05,-0.7,-40.05,
-      -0.05,-0.7,-40.05,
-      -0.1,-1,-40.1,
-      0.1,-1,-40.1,
-      
-      0.05,-0.7,-39.95,
-      0.1,-1,-39.90,
-      -0.1,-1,-39.90,
-      -0.05,-0.7,-39.95,
-     
-      
- 
-};
+extern float latarniaVertices[];
 
-float latarniaColors[]={
-  
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	
-	1,1,1,
-	1,1,1,
-	1,1,1,
-	1,1,1
-	
-};
+extern float latarniaColors[];
 
 // tablica ze wspolrzednymi tesktury - troche juz wiem jak to dziala
-float latarniaTexCoords2[]={
-	0,0
-};
+extern float latarniaTexCoords2[];
 
 // tablica z wpolrzednymi do wektorow normalnych
-float latarniaNormals[]={
-  
-  0.25,-0.05,0.25,
-  0.25,0.3,0.25,
-  0.25,0.3,-0.25,
-  0.25,-0.05,-0.25,
-  
-  
-  -0.25,-0.05,0.25,
-  -0.25,0.3,0.25,
-  -0.25,0.3,-0.25,
-  -0.25,-0.05,-0.25,
-  
-  -0.25,-0.05,0.25,
-  0.25,-0.05,0.25,
-  0.25,0.3,0.25,
-  -0.25,0.3,0.25,
-  
-  -0.25,-0.05,-0.25,
-  -0.25,0.3,-0.25,
-  0.25,0.3,-0.25,
-  -0.25,-0.05,-0.25,
-    
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  
-  0,1,0,
-  0,1,0,
-  0,1,0,
-  0,1,0
-};
+extern float latarniaNormals[];
+
+extern int lightVertexCount;//16;
+
+extern float lightVertices[];
+
+extern float lightColors[];
+
+// tablica ze wspolrzednymi tesktury - troche juz wiem jak to dziala
+extern float lightTexCoords2[];
+
+// tablica z wpolrzednymi do wektorow normalnych
+extern float lightNormals[];
+
+extern GLuint tex5, tex3; //Globalnie
+extern TGAImg img5, img3; //Obojętnie czy globalnie, czy lokalnie
 
 
+void draw_latarnia(glm::mat4 , float , float , float );
 
 
 
