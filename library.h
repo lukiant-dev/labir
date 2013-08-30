@@ -6,6 +6,7 @@
 #include <stdio.h> //Przydatne do wypisywania komunikatów na konsoli
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"

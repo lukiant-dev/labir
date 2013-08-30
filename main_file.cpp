@@ -26,8 +26,11 @@ float speed_x=0; //60 stopni/s
 float speed_y=0; //60 stopni/s
 GLuint tex,tex2; //Globalnie
 TGAImg img; //Obojętnie czy globalnie, czy lokalnie
- GLMmodel * buka;    // obiekt modelu z glm.h   
-
+ GLMmodel * buka;    // obiekt modelu z glm.h 
+ 
+int mapa_x=20;
+int mapa_y=20; 
+int tab[20][20];
 void displayFrame(void) 
 {
     
@@ -236,18 +239,11 @@ for (int i=0; i<100; i++){
 glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
 glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
    
-    int tab[3][2];
-    tab[0][0]=0;
-    tab[1][0]=2;
-    tab[2][0]=0;
-    tab[0][1]=3;
-    tab[1][1]=1;
-    tab[2][1]=7;
     
     int x,y;
-    x=1;
-    y=1;
-    for(int i = 0; i<2 ; i++)for(int j = 0; j<3;j++)
+    x=(mapa_x/2)-1;
+    y=(mapa_y-1);
+    for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
     {
 	  if(tab[j][i]==1)draw_crossing(V,-(j-x)*2,0,41-(i-y)*2);
 	  if(tab[j][i]==2)draw_corridor(V,-(j-x)*2,0,41-(i-y)*2,0.0);
@@ -513,6 +509,22 @@ buka = glmReadOBJ("buka.obj");
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
     glEnable(GL_TEXTURE_2D);
+    
+    FILE *fp;
+
+    if ((fp=fopen("mapa.txt", "r"))==NULL)
+	{
+	printf("Nie moge otworzyc pliku mapa.txt do odczytu");
+	exit(1);
+	}
+   
+    
+      for(int i=0;i<mapa_y;i++)for(int j=0;j<mapa_x;j++)
+    {
+      //fseek(fp,1,SEEK_CUR);
+      fscanf (fp, "%d", &tab[j][i]);
+      //cout<<"liczba1: "<<liczba<<endl;
+    }
 
     if (img.Load("bukaTex.tga")==IMG_OK) 
     {

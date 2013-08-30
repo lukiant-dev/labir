@@ -173,17 +173,17 @@ void draw_crossing(glm::mat4 V, float x, float y, float z)
   
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState( GL_NORMAL_ARRAY );
+    //glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
     
-    glNormalPointer( GL_FLOAT, 0, crossingNormals);
+   // glNormalPointer( GL_FLOAT, 0, crossingNormals);
     glVertexPointer(3,GL_FLOAT,0,crossingVertices);
     glColorPointer(3,GL_FLOAT,0,crossingColors);// do kolorow
     
     glDrawArrays(GL_QUADS,0,crossingVertexCount);
    
-    glDisableClientState( GL_NORMAL_ARRAY );
+    //glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_COLOR_ARRAY );
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -214,17 +214,17 @@ void draw_corridor(glm::mat4 V, float x, float y, float z, float kat)
   
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState( GL_NORMAL_ARRAY );
+    //glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
     
-    glNormalPointer( GL_FLOAT, 0, corridorNormals);
+    //glNormalPointer( GL_FLOAT, 0, corridorNormals);
     glVertexPointer(3,GL_FLOAT,0,corridorVertices);
     glColorPointer(3,GL_FLOAT,0,corridorColors);// do kolorow
     
     glDrawArrays(GL_QUADS,0,corridorVertexCount);
    
-    glDisableClientState( GL_NORMAL_ARRAY );
+    //glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_COLOR_ARRAY );
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -256,17 +256,17 @@ void draw_ending(glm::mat4 V, float x, float y, float z, float kat)
   
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState( GL_NORMAL_ARRAY );
+    //glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
     
-    glNormalPointer( GL_FLOAT, 0, endingNormals);
+   // glNormalPointer( GL_FLOAT, 0, endingNormals);
     glVertexPointer(3,GL_FLOAT,0,endingVertices);
     glColorPointer(3,GL_FLOAT,0,endingColors);// do kolorow
     
     glDrawArrays(GL_QUADS,0,endingVertexCount);
    
-    glDisableClientState( GL_NORMAL_ARRAY );
+    //glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_COLOR_ARRAY );
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
