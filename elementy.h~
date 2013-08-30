@@ -38,12 +38,12 @@ extern float endingTexCoords[];
 // tablica z wpolrzednymi do wektorow normalnych
 extern float endingNormals[];
 
-//extern GLuint tex2, tex3; //Globalnie
-//extern TGAImg img2, img3; //Obojętnie czy globalnie, czy lokalnie
+extern GLuint tex4; //Globalnie
+extern TGAImg img4; //Obojętnie czy globalnie, czy lokalnie
 
 void draw_crossing(glm::mat4 , float , float , float );
-void draw_corridor(glm::mat4 , float , float , float );
-void draw_ending(glm::mat4 , float , float , float );
+void draw_corridor(glm::mat4 , float , float , float, double );
+void draw_ending(glm::mat4 , float , float , float, double );
 
 
 

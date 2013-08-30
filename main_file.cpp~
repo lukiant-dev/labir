@@ -111,11 +111,12 @@ void displayFrame(void)
     glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,128); // 128 najbardziej skupione
   */  
     
+
+
     glm::mat4 M=glm::mat4(1.0f);
     M=glm::rotate(M,angle_y,glm::vec3(0.0f,1.0f,0.0f));
     M=glm::rotate(M,angle_x,glm::vec3(1.0f,0.0f,0.0f));
   
-
    
     glLoadMatrixf(glm::value_ptr(V)); // albo polaczone
 /*
@@ -235,8 +236,35 @@ for (int i=0; i<100; i++){
 glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
 glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
    
+    int tab[3][2];
+    tab[0][0]=0;
+    tab[1][0]=2;
+    tab[2][0]=0;
+    tab[0][1]=3;
+    tab[1][1]=1;
+    tab[2][1]=7;
+    
+    int x,y;
+    x=1;
+    y=1;
+    for(int i = 0; i<2 ; i++)for(int j = 0; j<3;j++)
+    {
+	  if(tab[j][i]==1)draw_crossing(V,-(j-x)*2,0,41-(i-y)*2);
+	  if(tab[j][i]==2)draw_corridor(V,-(j-x)*2,0,41-(i-y)*2,0.0);
+	  if(tab[j][i]==3)draw_corridor(V,-(j-x)*2,0,41-(i-y)*2,90.0);
+	  if(tab[j][i]==4)draw_ending(V,-(j-x)*2,0,41-(i-y)*2,0.0);
+	  if(tab[j][i]==5)draw_ending(V,-(j-x)*2,0,41-(i-y)*2,90.0);
+	  if(tab[j][i]==6)draw_ending(V,-(j-x)*2,0,41-(i-y)*2,180.0);
+	  if(tab[j][i]==7)draw_ending(V,-(j-x)*2,0,41-(i-y)*2,270.0);
+	  
+    }
+    
     draw_latarnia(V,0,0,-40);
-    draw_corridor(V,0,0,41);
+    
+    
+    
+    
+    //draw_corridor(V,0,0,41,0.0);
     
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
 }
