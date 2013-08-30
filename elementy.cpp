@@ -3,15 +3,15 @@ int crossingVertexCount=8;//16;
 
 float crossingVertices[]={
         
-	-1,-1,-1,
-	-1,-1, 1,
-	 1,-1, 1,
-	 1,-1,-1,
+	-1.5,-1,-1.5,
+	-1.5,-1, 1.5,
+	 1.5,-1, 1.5,
+	 1.5,-1,-1.5,
 
-	-1, 1,-1,
-	-1, 1, 1,
-	 1, 1, 1,
-	 1, 1,-1
+	-1.5, 1,-1.5,
+	-1.5, 1, 1.5,
+	 1.5, 1, 1.5,
+	 1.5, 1,-1.5
 
 	
      
@@ -51,25 +51,25 @@ int corridorVertexCount=16;
 
 float corridorVertices[]={
       
-	-1,-1,-1,
-	-1,-1, 1,
-	 1,-1, 1,
-	 1,-1,-1,
+	-1.5,-1,-1.5,
+	-1.5,-1, 1.5,
+	 1.5,-1, 1.5,
+	 1.5,-1,-1.5,
 
-	-1, 1,-1,
-	-1, 1, 1,
-	 1, 1, 1,
-	 1, 1,-1,
+	-1.5, 1,-1.5,
+	-1.5, 1, 1.5,
+	 1.5, 1, 1.5,
+	 1.5, 1,-1.5,
 
-	-1,-1,-1,
-	-1,-1, 1,
-	-1, 1, 1,
-	-1, 1,-1,
+	-1.5,-1,-1.5,
+	-1.5,-1, 1.5,
+	-1.5, 1, 1.5,
+	-1.5, 1,-1.5,
 
-	 1,-1,-1,
-	 1,-1, 1,
-	 1, 1, 1,
-	 1, 1,-1
+	 1.5,-1,-1.5,
+	 1.5,-1, 1.5,
+	 1.5, 1, 1.5,
+	 1.5, 1,-1.5
       
  
 };
@@ -121,10 +121,10 @@ int endingVertexCount=4;//16;
 float endingVertices[]={
       
       
-	-1,-1,-1,
-	-1, 1,-1,
-	 1, 1,-1,
-	 1,-1,-1
+	-1.5,-1,-1.5,
+	-1.5, 1,-1.5,
+	 1.5, 1,-1.5,
+	 1.5,-1,-1.5
       
 };
 
@@ -256,17 +256,17 @@ void draw_ending(glm::mat4 V, float x, float y, float z, float kat)
   
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    //glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
     
-   // glNormalPointer( GL_FLOAT, 0, endingNormals);
+    glNormalPointer( GL_FLOAT, 0, endingNormals);
     glVertexPointer(3,GL_FLOAT,0,endingVertices);
     glColorPointer(3,GL_FLOAT,0,endingColors);// do kolorow
     
     glDrawArrays(GL_QUADS,0,endingVertexCount);
    
-    //glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_COLOR_ARRAY );
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
