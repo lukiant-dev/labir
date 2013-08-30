@@ -143,14 +143,11 @@ float endingTexCoords[]={
 // tablica z wpolrzednymi do wektorow normalnych
 float endingNormals[]={
   
-	-1,-1,-1,
-	-1, 1,-1,
-	 1, 1,-1,
-	 1,-1,-1
-
-	
+	 1,-1,-1,
+	 1,-1, 1,
+	 1, 1, 1,
+	 1, 1,-1
 };
-
 GLuint tex4; //Globalnie
 TGAImg img4; //Obojętnie czy globalnie, czy lokalnie
 
@@ -242,6 +239,7 @@ void draw_ending(glm::mat4 V, float x, float y, float z, float kat)
     M=glm::translate(M,glm::vec3(x,y,z));
     M=glm::rotate(M,kat,glm::vec3(0.0f,1.0f,0.0f));// 1 - os x, 1 - os y, 1 os z
    
+    
     glLoadMatrixf(glm::value_ptr(V*M));
     
     
@@ -256,20 +254,19 @@ void draw_ending(glm::mat4 V, float x, float y, float z, float kat)
   
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState( GL_NORMAL_ARRAY );
+    //glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
     
-    glNormalPointer( GL_FLOAT, 0, endingNormals);
+    //glNormalPointer( GL_FLOAT, 0, endingNormals);
     glVertexPointer(3,GL_FLOAT,0,endingVertices);
     glColorPointer(3,GL_FLOAT,0,endingColors);// do kolorow
     
     glDrawArrays(GL_QUADS,0,endingVertexCount);
    
-    glDisableClientState( GL_NORMAL_ARRAY );
+    //glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
     glDisableClientState( GL_COLOR_ARRAY );
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    
  
 }

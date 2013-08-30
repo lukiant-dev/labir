@@ -31,6 +31,8 @@ TGAImg img; //Obojętnie czy globalnie, czy lokalnie
 int mapa_x=20;
 int mapa_y=20; 
 int tab[20][20];
+int sekcja[1][2];
+int directions[4];
 void displayFrame(void) 
 {
     
@@ -128,10 +130,10 @@ void displayFrame(void)
 */
       
     // stozkowe nieruchome np. daszek
-    float lightPos[]={0,1.3,sw1,1};//{0,sw1,0,1};
+    float lightPos[]={1.5,172,-41,1};//{0,sw1,0,1};
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
 
-/*	
+	
     float lightPos2[]={0,-1,0,0}; // wskazuje na przestrzen ktora oswietla
     
     glLightfv(GL_LIGHT0,GL_POSITION,lightPos);
@@ -139,7 +141,7 @@ void displayFrame(void)
     
     glLightf(GL_LIGHT0,GL_SPOT_CUTOFF,1);// kat rozwarcia stozka /2
     glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,128); // 128 najbardziej skupione
-  */  
+    
 
     glLoadMatrixf(glm::value_ptr(V*M));
     
@@ -169,7 +171,7 @@ void displayFrame(void)
     float dif[]={0.7,0.5,0.5,1};
     float spec[]={0,0,0,0};
     
-
+    printf("ok");
     //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, amb); 
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
@@ -240,6 +242,7 @@ glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
 glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
    
     // generowanie labiryntu
+
     int x,y;
     x=(mapa_x/2)-1;
     y=(mapa_y-1);
@@ -254,14 +257,24 @@ glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
 	  if(tab[j][i]==7)draw_ending(V,-(j-x)*3,0,41.5-(i-y)*3,270.0);
 	  
     }
-    
     draw_latarnia(V,0,0,-40);
     
     
+    // sprawdzanie w ktorej sekcji jest gracz
+    for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
+    {
+      if((pozycja_obserwatora[0]>(-(j-x)*3-1.5)) && (pozycja_obserwatora[0]<(-(j-x)*3+1.5))
+	&& (pozycja_obserwatora[2]>(41.5-(i-y)*3-1.5)) && (pozycja_obserwatora[2]<(41.5-(i-y)*3+1.5)))
+      {
+	    sekcja[0][0]=j;
+	    sekcja[0][1]=i;
+	    
+      }
+    }
     
+     
     
-    //draw_corridor(V,0,0,41,0.0);
-    
+    printf(" sekcja: %d , %d \n", sekcja[0][0],sekcja[0][1]);
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
 }
 
@@ -363,6 +376,7 @@ void keyDown2(unsigned char c, int x, int y)
 
 int main(int argc, char* argv[]) 
 {
+    
     //poczatkowe wartosci dla obserwatora
     pozycja_obserwatora[0]=0;//os x
     pozycja_obserwatora[1]=0;// os y
@@ -371,6 +385,12 @@ int main(int argc, char* argv[])
     cel_obserwatora[1]=0;
     cel_obserwatora[2]=0;
     sw1=-40;
+    directions[0]=0;
+    directions[1]=0;
+    directions[2]=0;
+    directions[3]=0;
+    sekcja[0][0]=-1;
+    sekcja[0][1]=-1;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(ekran_x,ekran_y);
