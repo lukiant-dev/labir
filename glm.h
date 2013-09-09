@@ -13,7 +13,7 @@
 
 
 #include <GL/glut.h>
-
+#include <unistd.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -58,6 +58,8 @@ typedef struct _GLMgroup {
   struct _GLMgroup* next;		/* pointer to next group in model */
 } GLMgroup;
 
+
+
 /* GLMmodel: Structure that defines a model.
  */
 typedef struct _GLMmodel {
@@ -67,6 +69,11 @@ typedef struct _GLMmodel {
   GLfloat translacao[3];        /* coordenadas de translacao do objecto  */
   GLfloat escala[3];            /* coordenadas de escala do objecto  */
   GLfloat rotacao[4];           /* coordenadas de rotacao do objecto  */
+
+  GLfloat rot;
+  GLfloat posx;
+  GLfloat posy;
+  GLfloat posz;
 
   GLuint   numvertices;			/* number of vertices in model */
   GLfloat* vertices;			/* array of vertices  */
@@ -88,6 +95,16 @@ typedef struct _GLMmodel {
 
   GLuint       numgroups;		/* number of groups in model */
   GLMgroup*    groups;			/* linked list of groups */
+
+
+  GLuint   numvertices2;			/* number of vertices in model for drawing, with duplicates*/
+  GLfloat* vertices2;			/* array of duplicated vertices  */
+
+  GLuint   numtexcoords2;		/* 2number of texcoords in model */
+  GLfloat* texcoords2;			/* 2array of texture coordinates */
+
+  GLuint   numnormals2;			/* 2number of normals in model */
+  GLfloat* normals2;			/* 2array of normals */
 
   GLfloat position[3];			/* position of the model */
 

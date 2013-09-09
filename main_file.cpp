@@ -5,7 +5,7 @@
 #include "elementy.h"
 #include "glm.h"
 #define PI 3.14159265
-
+int temp=0;
 float speed=180; //360 stopni/s
 int lastTime=0;
 float angle, angle2;
@@ -28,11 +28,112 @@ GLuint tex,tex2; //Globalnie
 TGAImg img; //Obojętnie czy globalnie, czy lokalnie
  GLMmodel * buka;    // obiekt modelu z glm.h 
  
+GLuint triangleVBO;
+
 int mapa_x=20;
 int mapa_y=20; 
 int tab[20][20];
 int sekcja[1][2];
 int directions[4];
+void rotateModel(GLMmodel* model, GLuint texture,glm::mat4 V, float x, float y, float z, float kat)
+{
+    glm::mat4 M=glm::mat4(1.0f);
+
+    glMatrixMode(GL_MODELVIEW);
+ // glLoadMatrixf(glm::value_ptr(M));
+//glLoadIdentity();
+M=glm::translate(M,glm::vec3(x,y,z));
+M=glm::rotate(M,kat,glm::vec3(0.0f,1.0f,0.0f));    
+M=glm::translate(M,glm::vec3(-x,-y,-z));
+
+	
+glLoadMatrixf(glm::value_ptr(V*M));
+}
+
+void drawModel(GLMmodel* model, GLuint texture,glm::mat4 V, float x, float y, float z, float kat)
+{
+    glm::mat4 M=glm::mat4(1.0f);
+
+    glMatrixMode(GL_MODELVIEW);
+GLfloat pocz_x,pocz_y,pocz_z;
+//M=glm::translate(M,glm::vec3(x,y,z));
+//glLoadIdentity();
+
+//glLoadMatrixf(glm::value_ptr(V*M));
+//
+
+    
+
+//pocz_x=1.1f;
+//pocz_y=1.1f;
+pocz_x=-1.1f;
+pocz_y=-1.4f;
+pocz_z=0.0f;
+glm::vec3 poz_pocz=glm::vec3(pocz_x,pocz_y,pocz_z);
+//glm::mat4 V2=glm::lookAt(glm::vec3(0,0,0), glm::vec3(x,y,z), glm::vec3(0.0f,1.0f,0.0f));
+
+
+
+//M=glm::translate(M,glm::vec3(x,y,z));
+M=glm::translate(M,poz_pocz); 	
+M=glm::translate(M,glm::vec3(x-pocz_x,y-pocz_y,z-pocz_z));
+M=glm::rotate(M,kat,glm::vec3(0.0f,1.0f,0.0f));
+M=glm::translate(M,glm::vec3(-x+pocz_x,-y+pocz_y,-z+pocz_z));
+glLoadMatrixf(glm::value_ptr(V*M));
+
+//glGenBuffers(1, &triangleVBO);
+//glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+//printf("%d", sizeof(model->vertices2));
+//printf(" %d\n", sizeof(GLuint)*model->numtriangles);
+//sleep(100);
+//glBufferData(GL_ARRAY_BUFFER, sizeof(GLuint)*model->numvertices2, model->vertices2, GL_STATIC_DRAW);
+    glBindTexture(GL_TEXTURE_2D,texture);// do tekstury
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+// glEnableClientState(GL_COLOR_ARRAY);
+
+//glColorPointer(3,GL_FLOAT,0,cubeColors2);// do kolorow
+    glTexCoordPointer( 2, GL_FLOAT, 0, model->texcoords2);// do tekstury
+    glNormalPointer( GL_FLOAT, 0, model->normals2);
+    glVertexPointer(3, GL_FLOAT, 0, model->vertices2);
+    float amb[]={0,0,0,1};
+    float dif[]={0.7,0.5,0.5,1};
+    float spec[]={0,0,0,0};
+  
+    printf("ok");
+    //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, amb); 
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 50);
+//glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+//glBindBuffer(GL_ARRAY_BUFFER,0);
+glDrawArrays(GL_TRIANGLES,0,model->numtriangles*3);
+  
+
+    glDisableClientState( GL_NORMAL_ARRAY );
+    glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY); 
+//	glDisableClientState(GL_COLOR_ARRAY);
+
+
+}
+void animate(GLMmodel* model, GLfloat x, GLfloat y, GLfloat z){
+
+for (int i=0; i<model->numtriangles*3; i++){
+
+	model->vertices2[3*i]+=x;
+	model->vertices2[3*i+1]+=y;
+	model->vertices2[3*i+2]+=z;
+	
+	}
+	model->posx+=x;
+		model->posy+=y;
+		model->posz+=z;
+
+}
 void displayFrame(void) 
 {
     
@@ -89,7 +190,7 @@ void displayFrame(void)
     glutWireTorus(double innerRadius, double outerRadius,int nsides, int rings);
     
   
-    M=glm::rotate(glm::mat4(1.0f),angle,glm::vec3(0.0f,0.0f,-10.0f)); // odpowiada za obrot
+   glm::mat4 M=glm::rotate(glm::mat4(1.0f),angle,glm::vec3(0.0f,0.0f,-10.0f)); // odpowiada za obrot
     M=glm::translate(M,glm::vec3(0.0f,0.0f,0.0f));
     
     M2=glm::translate(M2,glm::vec3(2.8f,0.0f,0.0f));
@@ -170,7 +271,7 @@ void displayFrame(void)
     float amb[]={0,0,0,1};
     float dif[]={0.7,0.5,0.5,1};
     float spec[]={0,0,0,0};
-    
+  
     printf("ok");
     //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, amb); 
@@ -187,60 +288,59 @@ void displayFrame(void)
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState( GL_NORMAL_ARRAY );
 
-    
-    
 //buka!
-// to jeszcze nie działa z niewiadomych przyczyn
-/*
- glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+
+
+/*    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState( GL_NORMAL_ARRAY );
+    glEnableClientState(GL_NORMAL_ARRAY);
+// glEnableClientState(GL_COLOR_ARRAY);
 
-//printf("%d \n", buka->texcoords);
+//glColorPointer(3,GL_FLOAT,0,cubeColors2);// do kolorow tekstury
+    glNormalPointer( GL_FLOAT, 0, (buka->normals2));
+    glVertexPointer(3,GL_FLOAT,0,(buka->vertices2));
 
-//printf("%d \n", buka->normals);
-//printf("%d \n", buka->vertices);
-printf("%d \n", &buka->vertices);
+//glDrawArrays(GL_TRIANGLES,0,buka->numtriangles);
+  
 
-    glTexCoordPointer( 2, GL_FLOAT, 0, buka->texcoords);// do tekstury
-    glNormalPointer( GL_FLOAT, 0, buka->normals);
-    glVertexPointer(3,GL_FLOAT,0,buka->vertices);
-
-    
-    glDrawArrays(GL_TRIANGLE_STRIP,0,buka->numvertices);
-   
     glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY); 
+//	glDisableClientState(GL_COLOR_ARRAY);
 */
-/* glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-   // glEnableClientState( GL_NORMAL_ARRAY );
+  //  glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
+//glmDraw(buka,GLM_TEXTURE); // alternatywne rysowanie - funkcja używa glBegin
+   
+drawModel(buka,tex2, V,buka->posx,buka->posy,buka->posz, buka->rot);
+//buka->rot = 180;
+printf("buka->rot %f\n", buka->rot);
+printf("buka->posx %f\n", buka->posx);
+printf("buka->posy %f\n", buka->posy);
+printf("buka->posz %f\n", buka->posz);
 
-//printf("%d \n", buka->texcoords);
-
-//printf("%d \n", buka->normals);
-//printf("%d \n", buka->vertices);
-
-
-    glTexCoordPointer( 2, GL_FLOAT, 0, buka->texcoords);// do tekstury
-    glNormalPointer( GL_FLOAT, 0, (buka->normals));
-    glVertexPointer(3,GL_FLOAT,0,(buka->vertices+3));
-for (int i=0; i<100; i++){
- printf("%d vertex \n", buka->vertices[i]);
+if (temp==1) {
+if (buka->posz<15) animate(buka, 0.0,0.0,0.1);
+else temp=2;
 }
- //   sleep(10);
-    glDrawArrays(GL_POLYGON,0,buka->numvertices-1);
-   
-    glDisableClientState( GL_NORMAL_ARRAY );
-    glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY); */
+if (temp==0) {
+if (buka->rot<180) buka->rot+=1;
+else
+temp = 1;
+}
+if (temp==3) {
+if (buka->posz>0) animate(buka, 0.0,0.0,-0.1);
+else temp=0;
+}
 
-glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
-glmDraw(buka,GLM_TEXTURE); // rozwiązanie tymczasowe, bo funkcja używa glBegin
-   
+if (temp==2) {
+if (buka->rot>0) buka->rot-=1;
+else
+temp = 3;
+}
+
+//rotateModel(buka,tex2,V,buka->posx,buka->posy,buka->posz,90);
+
     // generowanie labiryntu
 
     int x,y;
@@ -294,7 +394,9 @@ void nextFrame(void)
     if (angle_x>360) angle_x+=360;
     if (angle_y>360) angle_y-=360;
     if (angle_y>360) angle_y+=360;
-    
+
+	
+
     glutPostRedisplay();
 
 }
@@ -404,8 +506,18 @@ int main(int argc, char* argv[])
     glutSpecialFunc(keyDown);
     glutKeyboardFunc(keyDown2);
 // funkcji z glm.cpp, zaskakująco wczytuje model 
-buka = glmReadOBJ("buka.obj");
-    
+buka = glmReadOBJ("bunia2.obj");
+
+buka->posx = 0.0;
+buka->posy = 0.0;
+buka->posz = 0.0;
+buka->rot = 0.0;
+/*for (int i =0; i<buka->numtriangles*9+3; i++)
+{
+printf("%f ",buka->vertices2[i]);
+}printf("\n");
+sleep(100);
+*/
     glEnable(GL_LIGHTING); // do cieniowania
     glEnable(GL_LIGHT0);// do ustawienia swiatla - domyslnie 0, bialy i oznacza to ze jest w nieskonczonosci
     
@@ -546,7 +658,7 @@ buka = glmReadOBJ("buka.obj");
       //cout<<"liczba1: "<<liczba<<endl;
     }
 
-    if (img.Load("bukaTex.tga")==IMG_OK) 
+    if (img.Load("bunia.tga")==IMG_OK) 
     {
 
       glGenTextures(1,&tex2); //Zainicjuj uchwyt tex
