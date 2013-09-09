@@ -173,7 +173,7 @@ void draw_crossing(glm::mat4 V, float x, float y, float z)
     //glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
-    
+    glTexCoordPointer( 2, GL_FLOAT, 0, crossingTexCoords);
    // glNormalPointer( GL_FLOAT, 0, crossingNormals);
     glVertexPointer(3,GL_FLOAT,0,crossingVertices);
     glColorPointer(3,GL_FLOAT,0,crossingColors);// do kolorow
@@ -214,7 +214,7 @@ void draw_corridor(glm::mat4 V, float x, float y, float z, float kat)
     //glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
-    
+    glTexCoordPointer( 2, GL_FLOAT, 0, corridorTexCoords);
     //glNormalPointer( GL_FLOAT, 0, corridorNormals);
     glVertexPointer(3,GL_FLOAT,0,corridorVertices);
     glColorPointer(3,GL_FLOAT,0,corridorColors);// do kolorow
@@ -257,7 +257,7 @@ void draw_ending(glm::mat4 V, float x, float y, float z, float kat)
     //glEnableClientState( GL_NORMAL_ARRAY );
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       
-    
+    glTexCoordPointer( 2, GL_FLOAT, 0, endingTexCoords);
     //glNormalPointer( GL_FLOAT, 0, endingNormals);
     glVertexPointer(3,GL_FLOAT,0,endingVertices);
     glColorPointer(3,GL_FLOAT,0,endingColors);// do kolorow

@@ -35,52 +35,47 @@ int mapa_y=20;
 int tab[20][20];
 int sekcja[1][2];
 int directions[4];
+
+    int x=(mapa_x/2)-1;
+    int y=(mapa_y-1);
+
+
+
 void rotateModel(GLMmodel* model, GLuint texture,glm::mat4 V, float x, float y, float z, float kat)
 {
     glm::mat4 M=glm::mat4(1.0f);
-
     glMatrixMode(GL_MODELVIEW);
- // glLoadMatrixf(glm::value_ptr(M));
+//glLoadMatrixf(glm::value_ptr(M));
 //glLoadIdentity();
 M=glm::translate(M,glm::vec3(x,y,z));
 M=glm::rotate(M,kat,glm::vec3(0.0f,1.0f,0.0f));    
-M=glm::translate(M,glm::vec3(-x,-y,-z));
-
-	
+M=glm::translate(M,glm::vec3(-x,-y,-z));	
 glLoadMatrixf(glm::value_ptr(V*M));
 }
 
-void drawModel(GLMmodel* model, GLuint texture,glm::mat4 V, float x, float y, float z, float kat)
+void drawModel(GLMmodel* model, GLuint texture,glm::mat4 V, float x, float y, float z, GLfloat pocz_x, GLfloat pocz_y, GLfloat pocz_z, float kat)
 {
     glm::mat4 M=glm::mat4(1.0f);
 
     glMatrixMode(GL_MODELVIEW);
-GLfloat pocz_x,pocz_y,pocz_z;
-//M=glm::translate(M,glm::vec3(x,y,z));
-//glLoadIdentity();
 
-//glLoadMatrixf(glm::value_ptr(V*M));
-//
-
-    
-
-//pocz_x=1.1f;
-//pocz_y=1.1f;
-pocz_x=-1.1f;
-pocz_y=-1.4f;
-pocz_z=0.0f;
 glm::vec3 poz_pocz=glm::vec3(pocz_x,pocz_y,pocz_z);
-//glm::mat4 V2=glm::lookAt(glm::vec3(0,0,0), glm::vec3(x,y,z), glm::vec3(0.0f,1.0f,0.0f));
+
 
 
 
 //M=glm::translate(M,glm::vec3(x,y,z));
+//przesunięcie do początku układu
 M=glm::translate(M,poz_pocz); 	
 M=glm::translate(M,glm::vec3(x-pocz_x,y-pocz_y,z-pocz_z));
+//rotacja i skalowanie
 M=glm::rotate(M,kat,glm::vec3(0.0f,1.0f,0.0f));
+M=glm::scale(M,glm::vec3(0.7f,0.7f,0.7f));
+//przesunięcie na docelową pozycję
 M=glm::translate(M,glm::vec3(-x+pocz_x,-y+pocz_y,-z+pocz_z));
-glLoadMatrixf(glm::value_ptr(V*M));
 
+glLoadMatrixf(glm::value_ptr(V*M));
+//VBO nie działa ;/
 //glGenBuffers(1, &triangleVBO);
 //glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
 //printf("%d", sizeof(model->vertices2));
@@ -92,9 +87,7 @@ glLoadMatrixf(glm::value_ptr(V*M));
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
 
-// glEnableClientState(GL_COLOR_ARRAY);
 
-//glColorPointer(3,GL_FLOAT,0,cubeColors2);// do kolorow
     glTexCoordPointer( 2, GL_FLOAT, 0, model->texcoords2);// do tekstury
     glNormalPointer( GL_FLOAT, 0, model->normals2);
     glVertexPointer(3, GL_FLOAT, 0, model->vertices2);
@@ -103,7 +96,7 @@ glLoadMatrixf(glm::value_ptr(V*M));
     float spec[]={0,0,0,0};
   
     printf("ok");
-    //glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amb);
+   
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, amb); 
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, dif);
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
@@ -116,7 +109,7 @@ glDrawArrays(GL_TRIANGLES,0,model->numtriangles*3);
     glDisableClientState( GL_NORMAL_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY); 
-//	glDisableClientState(GL_COLOR_ARRAY);
+
 
 
 }
@@ -127,11 +120,65 @@ for (int i=0; i<model->numtriangles*3; i++){
 	model->vertices2[3*i]+=x;
 	model->vertices2[3*i+1]+=y;
 	model->vertices2[3*i+2]+=z;
-	
 	}
 	model->posx+=x;
 		model->posy+=y;
 		model->posz+=z;
+
+}
+void moveBuka(){
+
+if (temp==1) {
+if (buka->posz<55) animate(buka, 0.0,0.0,0.2);
+else temp=2;
+}
+if (temp==0) {
+if (buka->rot<180) buka->rot+=2;
+else
+temp = 1;
+}
+if (temp==3) {
+if (buka->posz>0) animate(buka, 0.0,0.0,-0.2);
+else temp=0;
+}
+
+if (temp==2) {
+if (buka->rot>0) buka->rot-=2;
+else
+temp = 3;
+}
+}
+
+
+void collisionDetect()
+{//początki detekcji kolizji
+  for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
+    {
+      if((pozycja_obserwatora[0]>(-(j-x)*3-1.5)) && (pozycja_obserwatora[0]<(-(j-x)*3+1.5))
+	&& (pozycja_obserwatora[2]>(41.5-(i-y)*3-1.5)) && (pozycja_obserwatora[2]<(41.5-(i-y)*3+1.5)))
+      {printf(" sekcja: %d , %d  \n", sekcja[0][0],sekcja[0][1]);
+	    sekcja[0][0]=j;
+	    sekcja[0][1]=i;
+	    
+      }
+else {
+		sekcja[0][0]=0;
+	    	sekcja[0][1]=0;
+}
+    }
+    printf("pozycja_obserwatora0: %f\n",pozycja_obserwatora[0]);
+
+    printf("pozycja_obserwatora2: %f\n",pozycja_obserwatora[2]);
+printf(" sekcja: %d , %d  \n", sekcja[0][0],sekcja[0][1]);
+    printf(" sekcja: %d  \n", tab[sekcja[0][0]][sekcja[0][1]]);
+//trzeba policzyć ściany których nie można przekroczyć z marginesem, jeśli przekroczone nie pozwolić iść dalej
+
+
+
+
+
+//kolizja z buką - koniec gry?
+// liczymy sobie od posx, posy, posz modelu z marginesem 
 
 }
 void displayFrame(void) 
@@ -290,62 +337,16 @@ void displayFrame(void)
 
 //buka!
 
-
-
-/*    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-// glEnableClientState(GL_COLOR_ARRAY);
-
-//glColorPointer(3,GL_FLOAT,0,cubeColors2);// do kolorow tekstury
-    glNormalPointer( GL_FLOAT, 0, (buka->normals2));
-    glVertexPointer(3,GL_FLOAT,0,(buka->vertices2));
-
-//glDrawArrays(GL_TRIANGLES,0,buka->numtriangles);
-  
-
-    glDisableClientState( GL_NORMAL_ARRAY );
-    glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY); 
-//	glDisableClientState(GL_COLOR_ARRAY);
-*/
-  //  glBindTexture(GL_TEXTURE_2D,tex2);// do tekstury
-//glmDraw(buka,GLM_TEXTURE); // alternatywne rysowanie - funkcja używa glBegin
-   
-drawModel(buka,tex2, V,buka->posx,buka->posy,buka->posz, buka->rot);
-//buka->rot = 180;
+drawModel(buka,tex2, V,buka->posx,buka->posy,buka->posz, 0.0f, -0.0f, +2.3f,buka->rot);
 printf("buka->rot %f\n", buka->rot);
 printf("buka->posx %f\n", buka->posx);
 printf("buka->posy %f\n", buka->posy);
 printf("buka->posz %f\n", buka->posz);
 
-if (temp==1) {
-if (buka->posz<15) animate(buka, 0.0,0.0,0.1);
-else temp=2;
-}
-if (temp==0) {
-if (buka->rot<180) buka->rot+=1;
-else
-temp = 1;
-}
-if (temp==3) {
-if (buka->posz>0) animate(buka, 0.0,0.0,-0.1);
-else temp=0;
-}
-
-if (temp==2) {
-if (buka->rot>0) buka->rot-=1;
-else
-temp = 3;
-}
-
-//rotateModel(buka,tex2,V,buka->posx,buka->posy,buka->posz,90);
 
     // generowanie labiryntu
 
-    int x,y;
-    x=(mapa_x/2)-1;
-    y=(mapa_y-1);
+    
     for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
     {
 	  if(tab[j][i]==1)draw_crossing(V,-(j-x)*3,0,41.5-(i-y)*3);
@@ -361,27 +362,16 @@ temp = 3;
     
     
     // sprawdzanie w ktorej sekcji jest gracz
-    for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
-    {
-      if((pozycja_obserwatora[0]>(-(j-x)*3-1.5)) && (pozycja_obserwatora[0]<(-(j-x)*3+1.5))
-	&& (pozycja_obserwatora[2]>(41.5-(i-y)*3-1.5)) && (pozycja_obserwatora[2]<(41.5-(i-y)*3+1.5)))
-      {
-	    sekcja[0][0]=j;
-	    sekcja[0][1]=i;
-	    
-      }
-    }
-    
-     
-    
-    printf(" sekcja: %d , %d \n", sekcja[0][0],sekcja[0][1]);
+
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
 }
 
 // animacja - tego jeszcze nie wykorzystujemy, a bedziemy zeby zrobic cos ruchomego
 void nextFrame(void) 
 {
-
+    int x,y;
+    x=(mapa_x/2)-1;
+    y=(mapa_y-1);
     int actTime=glutGet(GLUT_ELAPSED_TIME);
 
     int interval=actTime-lastTime; // liczy przedzial
@@ -395,7 +385,47 @@ void nextFrame(void)
     if (angle_y>360) angle_y-=360;
     if (angle_y>360) angle_y+=360;
 
+collisionDetect();
+moveBuka();
+
 	
+ /*   for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
+    {
+      if((pozycja_obserwatora[0]>(-(j-x)*3-1.5)) && (pozycja_obserwatora[0]<(-(j-x)*3+1.5))
+	&& (pozycja_obserwatora[2]>(41.5-(i-y)*3-1.5)) && (pozycja_obserwatora[2]<(41.5-(i-y)*3+1.5)))
+      {
+	    sekcja[0][0]=j;
+	    sekcja[0][1]=i;
+	    
+      }
+    }
+    
+     
+    printf("pozycja_obserwatora0: %f\n",pozycja_obserwatora[0]);
+
+    printf("pozycja_obserwatora2: %f\n",pozycja_obserwatora[2]);
+    printf(" sekcja: %d , %d \n", sekcja[0][0],sekcja[0][1]);
+
+*/
+    for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
+    {
+      if((buka->posx>(-(j-x)*3-1.5)) && (buka->posx<(-(j-x)*3+1.5))
+	&& (buka->posz>(41.5-(i-y)*3-1.5)) && (buka->posz<(41.5-(i-y)*3+1.5)))
+      {
+	    sekcja[0][0]=j;
+	    sekcja[0][1]=i;
+	    
+      }
+    }
+    
+     
+    printf("posx: %f\n",buka->posx);
+
+    printf("posz: %f\n",buka->posz);
+    printf(" sekcja: %d , %d \n", sekcja[0][0],sekcja[0][1]);
+
+
+
 
     glutPostRedisplay();
 
@@ -506,7 +536,7 @@ int main(int argc, char* argv[])
     glutSpecialFunc(keyDown);
     glutKeyboardFunc(keyDown2);
 // funkcji z glm.cpp, zaskakująco wczytuje model 
-buka = glmReadOBJ("bunia2.obj");
+buka = glmReadOBJ("buka.obj");
 
 buka->posx = 0.0;
 buka->posy = 0.0;
@@ -658,7 +688,7 @@ sleep(100);
       //cout<<"liczba1: "<<liczba<<endl;
     }
 
-    if (img.Load("bunia.tga")==IMG_OK) 
+    if (img.Load("bukaTex.tga")==IMG_OK) 
     {
 
       glGenTextures(1,&tex2); //Zainicjuj uchwyt tex
