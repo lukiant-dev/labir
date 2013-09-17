@@ -16,15 +16,17 @@ int ekran_y=800;
 int obrot=2;
 int licznik=0;
 int ostatni_cel_x=0;
+int game_state = 0;
+int after_state = 0;
 float v_oddalania=0.1; // predkosc oddalania sie przy uzyciu strzalek UP, DOWN
 float v_obracania=5; // kat obracania sie bohatera przy uzyciu strzalek LEFT, RIGHT  
-
+float winx, winz;
 float sw1, sw2;
 float angle_x;
 float angle_y;
 float speed_x=0; //60 stopni/s
 float speed_y=0; //60 stopni/s
-GLuint tex,tex2; //Globalnie
+GLuint tex,tex2,tex_win, tex_dead; //Globalnie
 TGAImg img; //Obojętnie czy globalnie, czy lokalnie
  GLMmodel * buka;    // obiekt modelu z glm.h 
  
@@ -38,9 +40,37 @@ int directions[4];
 
     int x=(mapa_x/2)-1;
     int y=(mapa_y-1);
+char text[5]="test";
+
+void drawBitmapText(char *string,float x,float y,float z) 
+{  
+glMatrixMode(GL_PROJECTION);
+glPushMatrix();
+glLoadIdentity();
+//gluOrtho2D(10.0, 10.0, 10.0, 10.0);
+gluOrtho2D(200, ekran_x+200, 200, ekran_y+200);//, 0.0f, 1.0f);
+glMatrixMode(GL_MODELVIEW);
+glPushMatrix();
+glLoadIdentity();
+glColor3f(0.0, 1.0, 0.0); // Green
+//glRasterPos2i(200, 200);
+glScalef(0.2, 0.2,0.2);
+char * text = "Win!";
+void * font = GLUT_BITMAP_9_BY_15;
+
+for( char* p = text; *p; p++)
+    {
+        glutStrokeCharacter(GLUT_STROKE_ROMAN, *p);
+    }
+
+glMatrixMode(GL_MODELVIEW);
+glPopMatrix();
+
+glMatrixMode(GL_PROJECTION);
+glPopMatrix();
 
 
-
+}
 void rotateModel(GLMmodel* model, GLuint texture,glm::mat4 V, float x, float y, float z, float kat)
 {
     glm::mat4 M=glm::mat4(1.0f);
@@ -129,7 +159,7 @@ for (int i=0; i<model->numtriangles*3; i++){
 void moveBuka(){
 
 if (temp==1) {
-if (buka->posz<55) animate(buka, 0.0,0.0,0.2);
+if (buka->posz<65) animate(buka, 0.0,0.0,0.2);
 else temp=2;
 }
 if (temp==0) {
@@ -143,7 +173,7 @@ else temp=0;
 }
 
 if (temp==2) {
-if (buka->rot>0) buka->rot-=2;
+if (buka->rot>0) buka->rot-=0.5;
 else
 temp = 3;
 }
@@ -173,7 +203,10 @@ printf(" sekcja: %d , %d  \n", sekcja[0][0],sekcja[0][1]);
     printf(" sekcja: %d  \n", tab[sekcja[0][0]][sekcja[0][1]]);
 //trzeba policzyć ściany których nie można przekroczyć z marginesem, jeśli przekroczone nie pozwolić iść dalej
 
+if(tab[sekcja[0][0]][sekcja[0][1]])
+{
 
+}
 
 
 
@@ -336,7 +369,7 @@ void displayFrame(void)
     glDisableClientState( GL_NORMAL_ARRAY );
 
 //buka!
-
+if(game_state==0)
 drawModel(buka,tex2, V,buka->posx,buka->posy,buka->posz, 0.0f, -0.0f, +2.3f,buka->rot);
 printf("buka->rot %f\n", buka->rot);
 printf("buka->posx %f\n", buka->posx);
@@ -356,14 +389,34 @@ printf("buka->posz %f\n", buka->posz);
 	  if(tab[j][i]==5)draw_ending(V,-(j-x)*3,0,41.5-(i-y)*3,90.0);
 	  if(tab[j][i]==6)draw_ending(V,-(j-x)*3,0,41.5-(i-y)*3,180.0);
 	  if(tab[j][i]==7)draw_ending(V,-(j-x)*3,0,41.5-(i-y)*3,270.0);
-	  
+	  if(tab[j][i]==8)
+		{if(game_state!=1) draw_win_ending(V,-(j-x)*3,0,41.5-(i-y)*3,0.0,tex4);
+			else 
+{draw_win_ending(V,-(j-x)*3,0,41.5-(i-y)*3,0.0,tex_win);
+after_state=1;
+}			winx= -(j-x)*3;
+			winz= 41.5-(i-y)*3; 
+		}
     }
     draw_latarnia(V,0,0,-40);
     
+if(game_state==2)
+{
+
+draw_win_ending(V,cel_obserwatora[0],0,cel_obserwatora[2],0.0,tex_dead);
+glutSwapBuffers();
+after_state=1;
+sleep(1);
+printf("coś tam \n");
+}
     
+
     // sprawdzanie w ktorej sekcji jest gracz
 
+
+
     glutSwapBuffers();// przerzucenie tylnego bufor na przod ( tak jak kiedys )
+
 }
 
 // animacja - tego jeszcze nie wykorzystujemy, a bedziemy zeby zrobic cos ruchomego
@@ -387,8 +440,20 @@ void nextFrame(void)
 
 collisionDetect();
 moveBuka();
+if ((abs(pozycja_obserwatora[0]-buka->posx)<2.8) && (abs(pozycja_obserwatora[1]-buka->posy)<2.8) && (abs(pozycja_obserwatora[2]-buka->posz)<2.8) ) 
+{
+game_state=2;
+sleep(1);
+}
+if ((abs(pozycja_obserwatora[0]-winx)<5)&&(abs(pozycja_obserwatora[2]-winz)<5))
+game_state=1;
 
-	
+if(after_state!=0)
+{
+sleep(2);
+exit(0);
+}
+
  /*   for(int i = 0; i<mapa_y ; i++)for(int j = 0; j<mapa_x;j++)
     {
       if((pozycja_obserwatora[0]>(-(j-x)*3-1.5)) && (pozycja_obserwatora[0]<(-(j-x)*3+1.5))
@@ -568,6 +633,56 @@ sleep(100);
     {
       glGenTextures(1,&tex); //Zainicjuj uchwyt tex
       glBindTexture(GL_TEXTURE_2D,tex); //Przetwarzaj uchwyt tex
+      if (img.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
+      else if (img.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+    if (img.Load("bricks-win.tga")==IMG_OK) 
+    {
+      glGenTextures(1,&tex_win); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex_win); //Przetwarzaj uchwyt tex
+      if (img.GetBPP()==24) //Obrazek 24bit
+	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());
+      else if (img.GetBPP()==32)
+	  //Obrazek 32bit
+	  glTexImage2D(GL_TEXTURE_2D,0,4,img.GetWidth(),img.GetHeight(),0,
+	  GL_RGBA,GL_UNSIGNED_BYTE,img.GetImg());
+      else 
+      {
+	  //Obrazek 16 albo 8 bit, takimi się nie przejmujemy
+      }
+    } 
+    else 
+    {
+	  
+    }
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
+if (img.Load("bricks-dead.tga")==IMG_OK) 
+    {
+      glGenTextures(1,&tex_dead); //Zainicjuj uchwyt tex
+      glBindTexture(GL_TEXTURE_2D,tex_dead); //Przetwarzaj uchwyt tex
       if (img.GetBPP()==24) //Obrazek 24bit
 	  glTexImage2D(GL_TEXTURE_2D,0,3,img.GetWidth(),img.GetHeight(),0,
 	  GL_RGB,GL_UNSIGNED_BYTE,img.GetImg());

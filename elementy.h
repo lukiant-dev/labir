@@ -44,7 +44,7 @@ extern TGAImg img4; //Obojętnie czy globalnie, czy lokalnie
 void draw_crossing(glm::mat4 , float , float , float );
 void draw_corridor(glm::mat4 , float , float , float, float );
 void draw_ending(glm::mat4 , float , float , float, float );
-
+void draw_win_ending(glm::mat4 V, float x, float y, float z, float kat, GLuint tex);
 
 
 #endif
